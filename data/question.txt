@@ -1,0 +1,8 @@
+1|EASY|Vị lãnh tụ vĩ đại của nước ta là ai?|A.Hồ Chí Minh|B.Cao Bá Quát|C.Trần Hưng Đạo|D.Lý Thường Kiệt|A
+2|NORMAL|Sắt (Fe) có hoá trị cao nhất là mấy?|A. 1|B. 3|C. 2|D. 4|B
+3|HARD|Sắt tan trong Axitclohidric ra hợp chất gì?|A. FeCl|B. FeCl3|C. FeCl2 |D. FeCl4|C
+4|EASY|An có 4 cái kẹo, An cho mẹ 1 cái, cho bà 1 cái, hỏi An còn mấy cái?|A. 1|B. 5|C. 3|D. 2|D
+5|EASY|Bà đi chợ mua 5 trái táo, bà chia cho Sơn 1 trái, cho Hoàng 1 trái, còn lại cho Chiến. Hỏi Chiến có mấy trái táo?|A. 1|B. 2|C. 0|D. 3|D
+6|EASY|Cô giáo dạy môn Lập trình mạng lớp ta tên là gì?|A. Cô Linh|B. Cô Hồng|C. Cô Thắm|D. Cô Đào|A
+7|NORMAL|Tiếng kêu của con mèo là gì?|A. Gâu Gâu|B. Meomeo|C. Ụt ịt|D. Cục tác|B
+8|HARD|Bình phương của số nguyên tố nhỏ nhất có 2 chữ số là gì?|A. 11|B. 13|C. 121|D. 169|C
