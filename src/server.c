@@ -111,14 +111,14 @@ int main(int argc, char const *argv[])
         if (checkPort(argv[1]) == 1)
         {
             members = loadDataBase();
-            //Step 1: Construct a TCP socket to listen connection request
+            // Step 1: Construct a TCP socket to listen connection request
             if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
             { /* calls socket() */
                 perror("\nError: ");
                 return 0;
             }
 
-            //Step 2: Bind address to socket
+            // Step 2: Bind address to socket
             bzero(&servaddr, sizeof(servaddr));
             servaddr.sin_family = AF_INET;
             servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -130,7 +130,7 @@ int main(int argc, char const *argv[])
                 return 0;
             }
 
-            //Step 3: Listen request from client
+            // Step 3: Listen request from client
             if (listen(listenfd, BACKLOG) == -1)
             { /* calls listen() */
                 perror("\nError: ");
@@ -142,16 +142,16 @@ int main(int argc, char const *argv[])
             for (i = 0; i < FD_SETSIZE; i++)
             {
                 client[i] = -1; /* -1 indicates available entry */
-                status[i] = NOT_LOGGED_IN;
-                gamePlayStatus[i] = UNAUTH;
-                account[i] = NULL;
-                result[i] = LOSE;
+                // status[i] = NOT_LOGGED_IN;
+                // gamePlayStatus[i] = UNAUTH;
+                // account[i] = NULL;
+                // result[i] = LOSE;
             }
 
             FD_ZERO(&allset);
             FD_SET(listenfd, &allset);
 
-            //Step 4: Communicate with clients
+            // Step 4: Communicate with clients
             while (1)
             {
                 readfds = allset; /* structure assignment */
@@ -196,12 +196,12 @@ int main(int argc, char const *argv[])
                 {
                     if (countMemberOnline(head, numberPlayerArray) == BACKLOG && positionLuckyPlayer == 0)
                     {
-                        //get lucky member
+                        // get lucky member
                         positionLuckyPlayer = randomNumberInArray(numberPlayerArray, BACKLOG);
                         luckyPlayer = findUserNameAccountByPosition(head, positionLuckyPlayer);
-                        //init question
+                        // init question
                         readQuestionFromFile(headQuestion);
-                        //init hint
+                        // init hint
                         readHelpFromFile(headHelp);
                         gameStatus = GAME_PLAYING;
                     }
@@ -274,7 +274,7 @@ int main(int argc, char const *argv[])
                                         break;
                                     }
                                 }
-                                else if (rcvRequest->code == PASS) //CODE = PASS
+                                else if (rcvRequest->code == PASS) // CODE = PASS
                                 {
                                     switch (status[i])
                                     {
@@ -317,7 +317,7 @@ int main(int argc, char const *argv[])
                                         break;
                                     }
                                 }
-                                else if (rcvRequest->code == REGISTER) //CODE = REGISTER
+                                else if (rcvRequest->code == REGISTER) // CODE = REGISTER
                                 {
                                     switch (status[i])
                                     {
@@ -376,7 +376,7 @@ int main(int argc, char const *argv[])
                             case WAITING_QUESTION:
                                 if (strcmp(account[i]->username, luckyPlayer->username) == 0)
                                 {
-                                    if (rcvRequest->code == TOPIC_LEVEL) //codee == TOPIC_LEVEL
+                                    if (rcvRequest->code == TOPIC_LEVEL) // codee == TOPIC_LEVEL
                                     {
                                         memset(topic, '\0', (strlen(topic) + 1));
                                         strcpy(topic, rcvRequest->message);
@@ -398,7 +398,7 @@ int main(int argc, char const *argv[])
                                             questionNumber++;
                                             existQuestion = TRUE;
                                             gamePlayStatus[i] = PLAYING;
-                                            //set data response
+                                            // set data response
                                             response->code = TOPIC_USER_CHOOSE_LEVEL;
                                             response->status = gamePlayStatus[i];
                                             memset(response->data, '\0', (strlen(response->data) + 1));
@@ -414,7 +414,7 @@ int main(int argc, char const *argv[])
                                     }
                                     else if (rcvRequest->code == INFORMATION)
                                     {
-                                        //check all client answer
+                                        // check all client answer
                                         if (countAnswerWrong + countPlayerPlaying == BACKLOG - 1 - countPlayerLoser)
                                         {
                                             if (help == TRUE)
@@ -423,7 +423,6 @@ int main(int argc, char const *argv[])
                                                 playerScore -= score;
                                                 help = FALSE;
                                                 deleteHelp(headHelp, helpNumber++);
-
                                             }
                                             else
                                             {
@@ -434,7 +433,7 @@ int main(int argc, char const *argv[])
                                             infor->status = TRUE;
                                             infor->playerPlaying = countPlayerPlaying;
                                             infor->playerAnswerWrong = countAnswerWrong;
-                                            //send information
+                                            // send information
                                             sendInformation(sockfd, infor, sizeof(Information), 0);
                                             countPlayerLoser += countAnswerWrong;
                                             countPlayerPlaying = 0;
@@ -448,7 +447,7 @@ int main(int argc, char const *argv[])
                                     }
                                     else if (rcvRequest->code == CHECK)
                                     {
-                                        //check status of game
+                                        // check status of game
                                         if (BACKLOG - 1 - countPlayerLoser == 0)
                                         {
                                             gamePlayStatus[i] = END_GAME;
@@ -463,7 +462,7 @@ int main(int argc, char const *argv[])
                                         setMessageResponse(response);
                                         sendResponse(sockfd, response, sizeof(Response), 0);
                                     }
-                                    else //syntax error
+                                    else // syntax error
                                     {
                                         response->code = SYNTAX_ERROR;
                                         response->status = WAITING_QUESTION;
@@ -480,7 +479,7 @@ int main(int argc, char const *argv[])
                                             response->status = WAITING_QUESTION;
                                             sendResponse(sockfd, response, sizeof(Response), 0);
                                             receiveRequest(sockfd, rcvRequest, sizeof(Request), 0);
-                                            if (existQuestion == TRUE) //exist question
+                                            if (existQuestion == TRUE) // exist question
                                             {
                                                 response->code = TOPIC_USER_CHOOSE_LEVEL;
                                                 gamePlayStatus[i] = PLAYING;
@@ -498,7 +497,7 @@ int main(int argc, char const *argv[])
                                                 sendResponse(sockfd, response, sizeof(Response), 0);
                                             }
                                         }
-                                        else //lucky lose->end game
+                                        else // lucky lose->end game
                                         {
                                             response->code = GAME_END_WIN;
                                             response->status = END_GAME;
@@ -518,7 +517,7 @@ int main(int argc, char const *argv[])
                                     {
                                         if (convertListAnswer(rcvRequest->message) != E)
                                         {
-                                            //check answer
+                                            // check answer
                                             if (checkAnswer(ques->true_ans, convertListAnswer(rcvRequest->message)) == 1)
                                             {
 
@@ -547,10 +546,10 @@ int main(int argc, char const *argv[])
                                             sendResponse(sockfd, response, sizeof(Response), 0);
                                         }
                                     }
-                                    else if (rcvRequest->code == HELP) //uses help
+                                    else if (rcvRequest->code == HELP) // uses help
                                     {
                                         hint = searchHelpByStt(headHelp, helpNumber);
-                                        if (hint != NULL) //hint is exist
+                                        if (hint != NULL) // hint is exist
                                         {
                                             hint->score = playerScore * hint->value;
                                             response->code = USER_USED_HINT_SUCCESS;
@@ -571,7 +570,7 @@ int main(int argc, char const *argv[])
                                     }
                                     else if (rcvRequest->code == CHECK)
                                     {
-                                        //send question
+                                        // send question
                                         sendQuestion(sockfd, ques, sizeof(Question), 0);
                                     }
                                     else
@@ -588,7 +587,7 @@ int main(int argc, char const *argv[])
                                     {
                                         if (convertListAnswer(rcvRequest->message) != E)
                                         {
-                                            //check answer true
+                                            // check answer true
                                             if (checkAnswer(ques->true_ans, convertListAnswer(rcvRequest->message)) == 1)
                                             {
                                                 response->code = ANSWER_IS_CORRECT;
@@ -598,7 +597,7 @@ int main(int argc, char const *argv[])
                                                 sendResponse(sockfd, response, sizeof(Response), 0);
                                                 countPlayerPlaying++;
                                             }
-                                            else //false
+                                            else // false
                                             {
                                                 response->code = ANSWER_IS_INCORRECT;
                                                 setMessageResponse(response);
@@ -620,10 +619,10 @@ int main(int argc, char const *argv[])
                                     }
                                     else if (rcvRequest->code == CHECK)
                                     {
-                                        //send question
+                                        // send question
                                         sendQuestion(sockfd, ques, sizeof(Question), 0);
                                     }
-                                    else //syntax error
+                                    else // syntax error
                                     {
                                         response->code = SYNTAX_ERROR;
                                         response->status = PLAYING;
@@ -633,9 +632,9 @@ int main(int argc, char const *argv[])
                                 }
                                 break;
                             case END_GAME:
-                                if (strcmp(account[i]->username, luckyPlayer->username) == 0) //lucky player
+                                if (strcmp(account[i]->username, luckyPlayer->username) == 0) // lucky player
                                 {
-                                    if (rcvRequest->code == LOGOUT) //code == LOGOUT
+                                    if (rcvRequest->code == LOGOUT) // code == LOGOUT
                                     {
                                         account[i]->status = OFFLINE;
                                         luckyPlayer->status = OFFLINE;
@@ -645,7 +644,7 @@ int main(int argc, char const *argv[])
                                         strcpy(response->data, account[i]->username);
                                         sendResponse(sockfd, response, sizeof(Response), 0);
                                     }
-                                    else if (rcvRequest->code == INFORMATION) //send result
+                                    else if (rcvRequest->code == INFORMATION) // send result
                                     {
                                         if (countAnswerWrong + countPlayerPlaying == BACKLOG - 1 - countPlayerLoser)
                                         {
@@ -677,9 +676,9 @@ int main(int argc, char const *argv[])
                                         strcpy(response->data, account[i]->username);
                                         sendResponse(sockfd, response, sizeof(Response), 0);
                                     }
-                                    else if (rcvRequest->code == INFORMATION) //send result
+                                    else if (rcvRequest->code == INFORMATION) // send result
                                     {
-                                        if (countAnswerWrong + countPlayerPlaying == BACKLOG - 1 - countPlayerLoser) //check all client answer
+                                        if (countAnswerWrong + countPlayerPlaying == BACKLOG - 1 - countPlayerLoser) // check all client answer
                                         {
                                             if (result[i] == WIN)
                                             {
@@ -709,7 +708,7 @@ int main(int argc, char const *argv[])
                             break; /* no more readable descriptors */
                     }
                 }
-                if (gameStatus == GAME_PLAYING) //init new game
+                if (gameStatus == GAME_PLAYING) // init new game
                 {
                     if (countMemberOnline(head, numberPlayerArray) == 0)
                     {
