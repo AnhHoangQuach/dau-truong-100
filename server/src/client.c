@@ -59,11 +59,6 @@ void showQuestion(Question *question)
     printf("\n%s", question->answer4);
 }
 
-void clickedToLogin(GtkWidget *widget, gpointer data)
-{
-    gtk_widget_show(wi);
-}
-
 int main(int argc, char const *argv[])
 {
     int client_sock, servPort;
@@ -85,8 +80,6 @@ int main(int argc, char const *argv[])
     // gtk
     GtkBuilder *builder;
     GtkWidget *index;
-
-    GtkWidget *k = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
     gtk_init(&argc, &argv);
 
