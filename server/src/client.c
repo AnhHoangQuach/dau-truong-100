@@ -88,7 +88,7 @@ Request *request = NULL;
 Response *response = NULL;
 char buff[BUFF_SIZE];
 char pass[30];
-
+GtkWidget *Login_Password;
 void clickedToUserSubmit(GtkButton *Submit, gpointer data)
 {
     strcpy(name, "USER ");
@@ -102,14 +102,13 @@ void clickedToUserSubmit(GtkButton *Submit, gpointer data)
     status = response->status;
     GtkBuilder *builder;
     builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
-    GtkWidget *Login_Password;
     Login_Password = GTK_WIDGET(gtk_builder_get_object(builder, "Login_Password"));
     gtk_builder_connect_signals(builder, NULL);
     password_widget = GTK_WIDGET(gtk_builder_get_object(builder, "password"));
     buff[strlen(buff) - 1] = '\0';
     if (strcmp(buff, "Username is correct ") != 0)
     {
-        show_message(Login_Username, GTK_MESSAGE_INFO, "Thong bao", "Nhap sai cu may roi thang ngu");
+        show_message(Login_Username, GTK_MESSAGE_INFO, "Thong bao", buff);
     }
     else
     {
@@ -133,17 +132,7 @@ void show_message(GtkWidget *parent, GtkMessageType type, char *mms, char *conte
     gtk_widget_destroy(mdialog);
 }
 
-void clickedToOkPass(GtkButton *Ok, gpointer data)
-{
-    GtkBuilder *builder;
-    builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
-    GtkWidget *waiting_player;
-    waiting_player = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_player"));
-    gtk_builder_connect_signals(builder, NULL);
-    g_signal_connect(waiting_player, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    g_object_unref(builder);
-    gtk_widget_show(waiting_player);
-}
+
 
 void clickedToPassSubmit(GtkButton *Submit, gpointer data)
 {
@@ -155,17 +144,18 @@ void clickedToPassSubmit(GtkButton *Submit, gpointer data)
     sendRequest(client_sock, request, sizeof(Request), 0);
     receiveResponse(client_sock, response, sizeof(Response), 0);
     strcpy(buff, readMessageResponse(response));
-    GtkBuilder *builder;
-    GtkWidget *message_pass;
-    GtkWidget *server_message_pass;
-    builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
-    server_message_pass = GTK_WIDGET(gtk_builder_get_object(builder, "server_message_pass"));
-    gtk_builder_connect_signals(builder, NULL);
-    message_pass = GTK_WIDGET(gtk_builder_get_object(builder, "messa_pass"));
-    gtk_entry_set_text(GTK_ENTRY(message_pass), buff);
-    g_signal_connect(server_message_pass, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    g_object_unref(builder);
-    gtk_widget_show(server_message_pass);
+    if(strcmp(response->message, "Login successful ") != 0)
+        show_message(Login_Password, GTK_MESSAGE_INFO, "Thong bao", buff);
+    else{
+        GtkBuilder *builder;
+        builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
+        GtkWidget *waiting_player;
+        waiting_player = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_player"));
+        gtk_builder_connect_signals(builder, NULL);
+        g_signal_connect(waiting_player, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+        g_object_unref(builder);
+        gtk_widget_show(waiting_player);       
+    }
 }
 
 int main(int argc, char const *argv[])
