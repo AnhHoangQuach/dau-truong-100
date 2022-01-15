@@ -209,7 +209,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <signal name="clicked" handler="loginTutorial" swapped="no"/>
+            <signal name="clicked" handler="clickedToLogin" swapped="no"/>
           </object>
           <packing>
             <property name="x">150</property>
@@ -247,13 +247,14 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkButton" id="submi">
+          <object class="GtkButton" id="submit_pass">
             <property name="label" translatable="yes">Submit</property>
             <property name="width_request">135</property>
             <property name="height_request">39</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <signal name="clicked" handler="clickedToPassSubmit" swapped="no"/>
           </object>
           <packing>
             <property name="x">198</property>
@@ -266,7 +267,11 @@
             <property name="height_request">40</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">LOGIN</property>
+            <property name="label" translatable="yes">-------------------Đấu trường 100-------------------
+Login Tutorial:
+Password syntax: PASS password
+-------------------Đấu trường 100-------------------
+Input to syntax:</property>
           </object>
           <packing>
             <property name="x">99</property>
@@ -337,13 +342,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="submit">
+          <object class="GtkButton" id="submit_user">
             <property name="label" translatable="yes">Submit</property>
             <property name="width_request">141</property>
             <property name="height_request">41</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <signal name="clicked" handler="clickedToUserSubmit" swapped="no"/>
           </object>
           <packing>
             <property name="x">186</property>
@@ -356,7 +362,13 @@
             <property name="height_request">41</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">LOGIN</property>
+            <property name="margin_right">1</property>
+            <property name="label" translatable="yes">-------------------Đấu trường 100-------------------
+Login Tutorial:
+Signin syntax: USER username
+-------------------Đấu trường 100-------------------
+Input to syntax:
+</property>
           </object>
           <packing>
             <property name="x">80</property>
@@ -503,6 +515,58 @@
             <property name="y">199</property>
           </packing>
         </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="server_message_pass">
+    <property name="can_focus">False</property>
+    <child type="titlebar">
+      <object class="GtkButton" id="Ok_pass">
+        <property name="label" translatable="yes">Ok
+</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <signal name="clicked" handler="clickedToOkPass" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkEntry" id="messa_pass">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="server_message_user">
+    <property name="can_focus">False</property>
+    <child type="titlebar">
+      <object class="GtkButton" id="Ok_user">
+        <property name="label" translatable="yes">Ok
+</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <signal name="clicked" handler="clickedToOkUser" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkEntry" id="messa_user">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="waiting_player">
+    <property name="can_focus">False</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkLabel" id="wait_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Đang đợi người chơi khác
+</property>
       </object>
     </child>
   </object>
