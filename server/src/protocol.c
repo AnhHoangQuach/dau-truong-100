@@ -132,26 +132,30 @@ void setMessageResponse(Response *msg)
   }
 }
 
-void readMessageResponse(Response *msg)
+char* readMessageResponse(Response *msg)
 {
+  char* buffer = malloc(1024);
+  memset(buffer, '\0', (strlen(buffer) + 1));
   if (msg->code != NULL)
   {
-    printf("%s\n", msg->message);
+    strcat(buffer, msg->message);
+    strcat(buffer, "\n");
     switch (msg->code)
     {
     case PASSWORD_CORRECT:
-      printf("Hello %s\n", msg->data);
+      strcat(buffer, msg->data);
       break;
     case LOGOUT_SUCCESS:
-      printf("Goodbye %s\n", msg->data);
+      strcat(buffer, msg->data);
       break;
     case TOPIC_USER_CHOOSE_LEVEL:
-      printf("User choose level %s\n", msg->data);
+      strcat(buffer, msg->data);
       break;
     default:
       break;
     }
   }
+  return buffer;
 }
 
 void setOpcodeRequest(Request *request, char *input)
