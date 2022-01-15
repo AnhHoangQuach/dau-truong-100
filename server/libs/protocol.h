@@ -93,7 +93,7 @@ int receiveMessage(int socket, Response *msg, int size, int flags);
 
 // set message response
 void setMessageResponse(Response *msg);
-void readMessageResponse(Response *msg);
+char* readMessageResponse(Response *msg);
 
 //set opcode request
 void setOpcodeRequest(Request *request, char *input);
