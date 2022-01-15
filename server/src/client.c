@@ -69,18 +69,17 @@ GtkWidget *password_widget;
 GAMEPLAY_STATUS status = UNAUTH;
 int clickedSubmit = 0;
 int client_sock, servPort;
+GtkWidget *Login_Username;
 void clickedToLogin(GtkButton *login, gpointer data)
 {
     GtkBuilder *builder;
     builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
-    GtkWidget *Login_Username;
     Login_Username = GTK_WIDGET(gtk_builder_get_object(builder, "Login_Username"));
     gtk_builder_connect_signals(builder, NULL);
     username_widget = GTK_WIDGET(gtk_builder_get_object(builder, "username"));
     g_signal_connect(Login_Username, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref(builder);
     gtk_widget_show(Login_Username);
-
 }
 
 char name[30];
@@ -90,7 +89,8 @@ Response *response = NULL;
 char buff[BUFF_SIZE];
 char pass[30];
 
-void clickedToUserSubmit(GtkButton *Submit, gpointer data){
+void clickedToUserSubmit(GtkButton *Submit, gpointer data)
+{
     strcpy(name, "USER ");
     strcat(name, gtk_entry_get_text(username_widget));
     request = (Request *)malloc(sizeof(Request));
@@ -99,42 +99,54 @@ void clickedToUserSubmit(GtkButton *Submit, gpointer data){
     sendRequest(client_sock, request, sizeof(Request), 0);
     receiveResponse(client_sock, response, sizeof(Response), 0);
     strcpy(buff, readMessageResponse(response));
-    GtkBuilder *builder;
-    GtkWidget *message_user;
-    GtkWidget *server_message_user;
-    builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
-    server_message_user = GTK_WIDGET(gtk_builder_get_object(builder, "server_message_user"));
-    gtk_builder_connect_signals(builder, NULL);
-    message_user = GTK_WIDGET(gtk_builder_get_object(builder, "messa_user"));
-    gtk_entry_set_text(GTK_ENTRY(message_user), buff);
-    g_signal_connect(server_message_user, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    g_object_unref(builder);
-    gtk_widget_show(server_message_user);
-}
-
-void clickedToOkUser(GtkButton *Ok, gpointer data){
+    status = response->status;
     GtkBuilder *builder;
     builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
     GtkWidget *Login_Password;
     Login_Password = GTK_WIDGET(gtk_builder_get_object(builder, "Login_Password"));
     gtk_builder_connect_signals(builder, NULL);
     password_widget = GTK_WIDGET(gtk_builder_get_object(builder, "password"));
+    buff[strlen(buff) - 1] = '\0';
+    if (strcmp(buff, "Username is correct ") != 0)
+    {
+        show_message(Login_Username, GTK_MESSAGE_INFO, "Thong bao", "Nhap sai cu may roi thang ngu");
+    }
+    else
+    {
+        gtk_widget_show(Login_Password);
+    }
     g_signal_connect(Login_Password, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref(builder);
-    gtk_widget_show(Login_Password);
 }
 
-void clickedToOkPass(GtkButton *Ok, gpointer data){
+
+void show_message(GtkWidget *parent, GtkMessageType type, char *mms, char *content)
+{
+    GtkWidget *mdialog;
+    mdialog = gtk_message_dialog_new(GTK_WINDOW(parent),
+                                     GTK_DIALOG_DESTROY_WITH_PARENT,
+                                     type,
+                                     GTK_BUTTONS_OK,
+                                     "%s", mms);
+    gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(mdialog), "%s", content);
+    gtk_dialog_run(GTK_DIALOG(mdialog));
+    gtk_widget_destroy(mdialog);
+}
+
+void clickedToOkPass(GtkButton *Ok, gpointer data)
+{
     GtkBuilder *builder;
     builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
     GtkWidget *waiting_player;
     waiting_player = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_player"));
     gtk_builder_connect_signals(builder, NULL);
-    g_signal_connect( waiting_player, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(waiting_player, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref(builder);
     gtk_widget_show(waiting_player);
 }
-void clickedToPassSubmit(GtkButton *Submit, gpointer data){
+
+void clickedToPassSubmit(GtkButton *Submit, gpointer data)
+{
     strcpy(pass, "PASS ");
     strcat(pass, gtk_entry_get_text(password_widget));
     request = (Request *)malloc(sizeof(Request));
@@ -153,9 +165,8 @@ void clickedToPassSubmit(GtkButton *Submit, gpointer data){
     gtk_entry_set_text(GTK_ENTRY(message_pass), buff);
     g_signal_connect(server_message_pass, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref(builder);
-    gtk_widget_show(server_message_pass);   
+    gtk_widget_show(server_message_pass);
 }
-
 
 int main(int argc, char const *argv[])
 {
@@ -178,8 +189,6 @@ int main(int argc, char const *argv[])
     GtkWidget *index;
 
     //GtkWidget *k = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-
-
 
     if (argc != 3)
     {
@@ -204,299 +213,299 @@ int main(int argc, char const *argv[])
                 printf("\nError!Can not connect to sever! Client exit imediately! ");
                 return 0;
             }
-    gtk_init(&argc, &argv);
+            gtk_init(&argc, &argv);
 
-    builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
+            builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
 
-    index = GTK_WIDGET(gtk_builder_get_object(builder, "Index"));
-    gtk_builder_connect_signals(builder, NULL);
+            index = GTK_WIDGET(gtk_builder_get_object(builder, "Index"));
+            gtk_builder_connect_signals(builder, NULL);
 
-    g_signal_connect(index, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    
-    g_object_unref(builder);
+            g_signal_connect(index, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-    gtk_widget_show(index);
-    gtk_main();
+            g_object_unref(builder);
+
+            gtk_widget_show(index);
+            gtk_main();
             // while (1)
             // {
             //     switch (status)
             //     {
             //     case UNAUTH:
-                    // send request
-                    //loginTutorial();
-                    //memset(buff, '\0', (strlen(buff) + 1));
-                    //fgets(buff, BUFF_SIZE, stdin);
-                    //buff[strlen(buff) - 1] = '\0';
-                    // setOpcodeRequest(request, name);
-                    // sendRequest(client_sock, request, sizeof(Request), 0);
-                    // // recv request
-                    // receiveResponse(client_sock, response, sizeof(Response), 0);
-                    // printf("%s\n", response->message);
-                    // memset(buff, '\0', (strlen(buff) + 1));
-                    // strcpy(buff, readMessageResponse(response));
-                    // printf("%s\n",buff);
-                    // GtkBuilder *build;
-                    // GtkWidget *message;
-                    // GtkWidget *server_message;
-                    // build = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
-                    // server_message = GTK_WIDGET(gtk_builder_get_object(build, "server_message"));
-                    // gtk_builder_connect_signals(build, NULL);
-                    // message = GTK_WIDGET(gtk_builder_get_object(builder, "messa"));
-                    // gtk_entry_set_text(GTK_ENTRY(message), buff);
-                    // g_signal_connect(server_message, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-                    // g_object_unref(build);
-                    // if(clickedSubmit == 1){
-                    //     gtk_widget_show(server_message);
-                    // }
-                    //readMessageResponse(response);
+            // send request
+            //loginTutorial();
+            //memset(buff, '\0', (strlen(buff) + 1));
+            //fgets(buff, BUFF_SIZE, stdin);
+            //buff[strlen(buff) - 1] = '\0';
+            // setOpcodeRequest(request, name);
+            // sendRequest(client_sock, request, sizeof(Request), 0);
+            // // recv request
+            // receiveResponse(client_sock, response, sizeof(Response), 0);
+            // printf("%s\n", response->message);
+            // memset(buff, '\0', (strlen(buff) + 1));
+            // strcpy(buff, readMessageResponse(response));
+            // printf("%s\n",buff);
+            // GtkBuilder *build;
+            // GtkWidget *message;
+            // GtkWidget *server_message;
+            // build = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+            // server_message = GTK_WIDGET(gtk_builder_get_object(build, "server_message"));
+            // gtk_builder_connect_signals(build, NULL);
+            // message = GTK_WIDGET(gtk_builder_get_object(builder, "messa"));
+            // gtk_entry_set_text(GTK_ENTRY(message), buff);
+            // g_signal_connect(server_message, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+            // g_object_unref(build);
+            // if(clickedSubmit == 1){
+            //     gtk_widget_show(server_message);
+            // }
+            //readMessageResponse(response);
 
-                    status = response->status;
-                    if (response->data != NULL)
-                    {
-                        memset(username, '\0', (strlen(username) + 1));
-                        strcpy(username, response->data);
-                    }
-                    //break;
-                // case WAITING_PLAYER:
-                //     // send request
-                //     requestGet(client_sock);
-                //     receiveResponse(client_sock, response, sizeof(Response), 0);
-                //     status = response->status;
-                //     if (status == WAITING_QUESTION)
-                //     {
-                //         // read message
-                //         readMessageResponse(response);
-                //         memset(luckyPlayer, '\0', (strlen(luckyPlayer) + 1));
-                //         strcpy(luckyPlayer, response->data);
-                //         printf("Lucky player: %s\n", luckyPlayer);
-                //         if (strcmp(luckyPlayer, username) == 0)
-                //             lucky = TRUE;
-                //         else
-                //             lucky = FALSE;
-                //     }
-                //     break;
-                // case WAITING_QUESTION:
-                //     if (lucky == TRUE)
-                //     {
-                //         if (inforamation == FALSE)
-                //         {
-                //             // request get information of game
-                //             requestCheckInformation(client_sock);
-                //             // recv information of game
-                //             receiveInformation(client_sock, infor, sizeof(Information), 0);
-                //             if (infor->status == TRUE)
-                //             {
-                //                 inforamation = TRUE;
-                //                 if (help == FALSE)
-                //                 {
-                //                     score = score + infor->score;
-                //                     printf("Số người trả lời sai câu hỏi trên: %d\n", infor->playerAnswerWrong);
-                //                     printf("Số điểm bạn nhận được: %.1f\n", infor->score);
-                //                     printf("Số người cùng chơi: %d\n", infor->playerPlaying);
-                //                     printf("Số điểm của bạn hiện tại: %.1f\n", score);
-                //                 }
-                //                 else
-                //                 {
-                //                     score = score - infor->score;
-                //                     printf("Số điểm bạn nhận bị trừ: %.1f\n", infor->score);
-                //                     printf("Số người trả lời sai câu hỏi trên: %d\n", infor->playerAnswerWrong);
-                //                     printf("Số người cùng chơi: %d\n", infor->playerPlaying);
-                //                     printf("Số điểm của bạn hiện tại: %.1f\n", score);
-                //                     help = FALSE;
-                //                 }
-                //             }
-                //         }
-                //         else
-                //         {
-                //             // request check status of game: PLAYING or END
-                //             requestGet(client_sock);
-                //             receiveResponse(client_sock, response, sizeof(Response), 0);
-                //             inforamation = FALSE;
-                //             if (response->status == END_GAME)
-                //             {
-                //                 status = response->status;
-                //                 readMessageResponse(response);
-                //             }
-                //             else
-                //             {
-                //                 // Choose topic
-                //                 chooseTopicLevel();
-                //                 memset(buff, '\0', (strlen(buff) + 1));
-                //                 fgets(buff, BUFF_SIZE, stdin);
-                //                 buff[strlen(buff) - 1] = '\0';
-                //                 setOpcodeRequest(request, buff);
-                //                 sendRequest(client_sock, request, sizeof(Request), 0);
-                //                 // recv response
-                //                 receiveResponse(client_sock, response, sizeof(Response), 0);
-                //                 status = response->status;
-                //                 if (status == PLAYING)
-                //                 {
-                //                     strcpy(topic, response->data);
-                //                     readMessageResponse(response);
-                //                 }
-                //                 if (status == WAITING_QUESTION)
-                //                 {
-                //                     readMessageResponse(response);
-                //                     inforamation = TRUE;
-                //                 }
-                //             }
-                //         }
-                //     }
-                //     else
-                //     {
-                //         // check status of game: playing or end?
-                //         requestGet(client_sock);
-                //         receiveResponse(client_sock, response, sizeof(Response), 0);
-                //         if (response->status == END_GAME)
-                //         {
-                //             status = response->status;
-                //             readMessageResponse(response);
-                //         }
-                //         else
-                //         {
-                //             // rcv response from ser
-                //             requestGet(client_sock);
-                //             receiveResponse(client_sock, response, sizeof(Response), 0);
-                //             status = response->status;
-                //             if (status == PLAYING)
-                //             {
-                //                 strcpy(topic, response->data);
-                //                 readMessageResponse(response);
-                //             }
-                //         }
-                //     }
-                //     break;
-                // case PLAYING:
-                //     if (lucky == TRUE)
-                //     {
-                //         if (existQuestion == TRUE)
-                //         {
-                //             printf("\nCâu hỏi số %d\n", questionNumber);
-                //             printf("Chủ đề: %s", topic);
-                //             showQuestion(ques);
-                //             printf("\nCâu trả lời: \n");
-                //             gamePlayForSpecialTutorial();
-                //             // check if request->code == HELP
-                //             if (strcmp(buff, "HELP") == 0)
-                //             {
-                //                 requestGetHelp(client_sock);
-                //             }
-                //             else
-                //             {
-                //                 // send request
-                //                 memset(buff, '\0', (strlen(buff) + 1));
-                //                 fgets(buff, BUFF_SIZE, stdin);
-                //                 buff[strlen(buff) - 1] = '\0';
+            status = response->status;
+            if (response->data != NULL)
+            {
+                memset(username, '\0', (strlen(username) + 1));
+                strcpy(username, response->data);
+            }
+            //break;
+            // case WAITING_PLAYER:
+            //     // send request
+            //     requestGet(client_sock);
+            //     receiveResponse(client_sock, response, sizeof(Response), 0);
+            //     status = response->status;
+            //     if (status == WAITING_QUESTION)
+            //     {
+            //         // read message
+            //         readMessageResponse(response);
+            //         memset(luckyPlayer, '\0', (strlen(luckyPlayer) + 1));
+            //         strcpy(luckyPlayer, response->data);
+            //         printf("Lucky player: %s\n", luckyPlayer);
+            //         if (strcmp(luckyPlayer, username) == 0)
+            //             lucky = TRUE;
+            //         else
+            //             lucky = FALSE;
+            //     }
+            //     break;
+            // case WAITING_QUESTION:
+            //     if (lucky == TRUE)
+            //     {
+            //         if (inforamation == FALSE)
+            //         {
+            //             // request get information of game
+            //             requestCheckInformation(client_sock);
+            //             // recv information of game
+            //             receiveInformation(client_sock, infor, sizeof(Information), 0);
+            //             if (infor->status == TRUE)
+            //             {
+            //                 inforamation = TRUE;
+            //                 if (help == FALSE)
+            //                 {
+            //                     score = score + infor->score;
+            //                     printf("Số người trả lời sai câu hỏi trên: %d\n", infor->playerAnswerWrong);
+            //                     printf("Số điểm bạn nhận được: %.1f\n", infor->score);
+            //                     printf("Số người cùng chơi: %d\n", infor->playerPlaying);
+            //                     printf("Số điểm của bạn hiện tại: %.1f\n", score);
+            //                 }
+            //                 else
+            //                 {
+            //                     score = score - infor->score;
+            //                     printf("Số điểm bạn nhận bị trừ: %.1f\n", infor->score);
+            //                     printf("Số người trả lời sai câu hỏi trên: %d\n", infor->playerAnswerWrong);
+            //                     printf("Số người cùng chơi: %d\n", infor->playerPlaying);
+            //                     printf("Số điểm của bạn hiện tại: %.1f\n", score);
+            //                     help = FALSE;
+            //                 }
+            //             }
+            //         }
+            //         else
+            //         {
+            //             // request check status of game: PLAYING or END
+            //             requestGet(client_sock);
+            //             receiveResponse(client_sock, response, sizeof(Response), 0);
+            //             inforamation = FALSE;
+            //             if (response->status == END_GAME)
+            //             {
+            //                 status = response->status;
+            //                 readMessageResponse(response);
+            //             }
+            //             else
+            //             {
+            //                 // Choose topic
+            //                 chooseTopicLevel();
+            //                 memset(buff, '\0', (strlen(buff) + 1));
+            //                 fgets(buff, BUFF_SIZE, stdin);
+            //                 buff[strlen(buff) - 1] = '\0';
+            //                 setOpcodeRequest(request, buff);
+            //                 sendRequest(client_sock, request, sizeof(Request), 0);
+            //                 // recv response
+            //                 receiveResponse(client_sock, response, sizeof(Response), 0);
+            //                 status = response->status;
+            //                 if (status == PLAYING)
+            //                 {
+            //                     strcpy(topic, response->data);
+            //                     readMessageResponse(response);
+            //                 }
+            //                 if (status == WAITING_QUESTION)
+            //                 {
+            //                     readMessageResponse(response);
+            //                     inforamation = TRUE;
+            //                 }
+            //             }
+            //         }
+            //     }
+            //     else
+            //     {
+            //         // check status of game: playing or end?
+            //         requestGet(client_sock);
+            //         receiveResponse(client_sock, response, sizeof(Response), 0);
+            //         if (response->status == END_GAME)
+            //         {
+            //             status = response->status;
+            //             readMessageResponse(response);
+            //         }
+            //         else
+            //         {
+            //             // rcv response from ser
+            //             requestGet(client_sock);
+            //             receiveResponse(client_sock, response, sizeof(Response), 0);
+            //             status = response->status;
+            //             if (status == PLAYING)
+            //             {
+            //                 strcpy(topic, response->data);
+            //                 readMessageResponse(response);
+            //             }
+            //         }
+            //     }
+            //     break;
+            // case PLAYING:
+            //     if (lucky == TRUE)
+            //     {
+            //         if (existQuestion == TRUE)
+            //         {
+            //             printf("\nCâu hỏi số %d\n", questionNumber);
+            //             printf("Chủ đề: %s", topic);
+            //             showQuestion(ques);
+            //             printf("\nCâu trả lời: \n");
+            //             gamePlayForSpecialTutorial();
+            //             // check if request->code == HELP
+            //             if (strcmp(buff, "HELP") == 0)
+            //             {
+            //                 requestGetHelp(client_sock);
+            //             }
+            //             else
+            //             {
+            //                 // send request
+            //                 memset(buff, '\0', (strlen(buff) + 1));
+            //                 fgets(buff, BUFF_SIZE, stdin);
+            //                 buff[strlen(buff) - 1] = '\0';
 
-                //                 setOpcodeRequest(request, buff);
-                //                 sendRequest(client_sock, request, sizeof(Request), 0);
-                //             }
-                //             // rcv request
-                //             receiveResponse(client_sock, response, sizeof(Response), 0);
+            //                 setOpcodeRequest(request, buff);
+            //                 sendRequest(client_sock, request, sizeof(Request), 0);
+            //             }
+            //             // rcv request
+            //             receiveResponse(client_sock, response, sizeof(Response), 0);
 
-                //             status = response->status;
-                //             readMessageResponse(response);
-                //             if (status == WAITING_QUESTION) // error validate
-                //             {
-                //                 existQuestion = FALSE;
-                //             }
-                //             if (response->code == USER_USED_HINT_SUCCESS) // use hint
-                //                 help = TRUE;
-                //         }
-                //         else
-                //         {
-                //             // request get question
-                //             requestGet(client_sock);
-                //             // rcv question
-                //             receiveQuestion(client_sock, ques, sizeof(Question), 0);
-                //             existQuestion = TRUE;
-                //             questionNumber++;
-                //         }
-                //     }
-                //     else
-                //     {
-                //         if (existQuestion == TRUE)
-                //         {
-                //             printf("\nCâu hỏi số %d\n", questionNumber);
-                //             printf("Chủ đề: %s", topic);
-                //             showQuestion(ques);
-                //             printf("\nCâu trả lời: \n");
-                //             gamePlayForNormalTutorial();
-                //             // send answer
-                //             memset(buff, '\0', (strlen(buff) + 1));
-                //             fgets(buff, BUFF_SIZE, stdin);
-                //             buff[strlen(buff) - 1] = '\0';
-                //             setOpcodeRequest(request, buff);
-                //             sendRequest(client_sock, request, sizeof(Request), 0);
-                //             // recv response
-                //             receiveResponse(client_sock, response, sizeof(Response), 0);
-                //             status = response->status;
-                //             if (status == WAITING_QUESTION)
-                //             {
-                //                 existQuestion = FALSE;
-                //             }
+            //             status = response->status;
+            //             readMessageResponse(response);
+            //             if (status == WAITING_QUESTION) // error validate
+            //             {
+            //                 existQuestion = FALSE;
+            //             }
+            //             if (response->code == USER_USED_HINT_SUCCESS) // use hint
+            //                 help = TRUE;
+            //         }
+            //         else
+            //         {
+            //             // request get question
+            //             requestGet(client_sock);
+            //             // rcv question
+            //             receiveQuestion(client_sock, ques, sizeof(Question), 0);
+            //             existQuestion = TRUE;
+            //             questionNumber++;
+            //         }
+            //     }
+            //     else
+            //     {
+            //         if (existQuestion == TRUE)
+            //         {
+            //             printf("\nCâu hỏi số %d\n", questionNumber);
+            //             printf("Chủ đề: %s", topic);
+            //             showQuestion(ques);
+            //             printf("\nCâu trả lời: \n");
+            //             gamePlayForNormalTutorial();
+            //             // send answer
+            //             memset(buff, '\0', (strlen(buff) + 1));
+            //             fgets(buff, BUFF_SIZE, stdin);
+            //             buff[strlen(buff) - 1] = '\0';
+            //             setOpcodeRequest(request, buff);
+            //             sendRequest(client_sock, request, sizeof(Request), 0);
+            //             // recv response
+            //             receiveResponse(client_sock, response, sizeof(Response), 0);
+            //             status = response->status;
+            //             if (status == WAITING_QUESTION)
+            //             {
+            //                 existQuestion = FALSE;
+            //             }
 
-                //             readMessageResponse(response);
-                //         }
-                //         else
-                //         {
-                //             // request get question
-                //             requestGet(client_sock);
-                //             // recv question
-                //             receiveQuestion(client_sock, ques, sizeof(Question), 0);
-                //             existQuestion = TRUE;
-                //             questionNumber++;
-                //         }
-                //     }
-                //     break;
-                // case END_GAME:
-                //     if (lucky == TRUE)
-                //     {
-                //         if (inforamation == FALSE)
-                //         {
-                //             // get result
-                //             requestCheckInformation(client_sock);
-                //             receiveInformation(client_sock, infor, sizeof(Information), 0);
-                //             if (infor->status == TRUE)
-                //             {
-                //                 printf("Số điểm bạn nhận được là: %1.f\n", infor->score);
-                //                 inforamation = TRUE;
-                //             }
-                //         }
-                //         else
-                //         {
-                //             // request logout
-                //             requestLogout(client_sock, username);
-                //             receiveResponse(client_sock, response, sizeof(Response), 0);
-                //             status = response->status;
-                //             readMessageResponse(response);
-                //             gameStatus = GAME_END;
-                //         }
-                //     }
-                //     else
-                //     {
-                //         if (inforamation == TRUE)
-                //         {
-                //             inforamation = FALSE;
-                //             // get information
-                //             requestCheckInformation(client_sock);
-                //             receiveInformation(client_sock, infor, sizeof(Information), 0);
-                //             printf("Số điểm bạn nhận được là: %1.f\n", infor->score);
-                //         }
-                //         else
-                //         {
-                //             // request logout
-                //             requestLogout(client_sock, username);
-                //             receiveResponse(client_sock, response, sizeof(Response), 0);
-                //             status = response->status;
-                //             readMessageResponse(response);
-                //             gameStatus = GAME_END;
-                //         }
-                //     }
-                //     break;
-                //}
-                //if (gameStatus == GAME_END)
-                //    break;
+            //             readMessageResponse(response);
+            //         }
+            //         else
+            //         {
+            //             // request get question
+            //             requestGet(client_sock);
+            //             // recv question
+            //             receiveQuestion(client_sock, ques, sizeof(Question), 0);
+            //             existQuestion = TRUE;
+            //             questionNumber++;
+            //         }
+            //     }
+            //     break;
+            // case END_GAME:
+            //     if (lucky == TRUE)
+            //     {
+            //         if (inforamation == FALSE)
+            //         {
+            //             // get result
+            //             requestCheckInformation(client_sock);
+            //             receiveInformation(client_sock, infor, sizeof(Information), 0);
+            //             if (infor->status == TRUE)
+            //             {
+            //                 printf("Số điểm bạn nhận được là: %1.f\n", infor->score);
+            //                 inforamation = TRUE;
+            //             }
+            //         }
+            //         else
+            //         {
+            //             // request logout
+            //             requestLogout(client_sock, username);
+            //             receiveResponse(client_sock, response, sizeof(Response), 0);
+            //             status = response->status;
+            //             readMessageResponse(response);
+            //             gameStatus = GAME_END;
+            //         }
+            //     }
+            //     else
+            //     {
+            //         if (inforamation == TRUE)
+            //         {
+            //             inforamation = FALSE;
+            //             // get information
+            //             requestCheckInformation(client_sock);
+            //             receiveInformation(client_sock, infor, sizeof(Information), 0);
+            //             printf("Số điểm bạn nhận được là: %1.f\n", infor->score);
+            //         }
+            //         else
+            //         {
+            //             // request logout
+            //             requestLogout(client_sock, username);
+            //             receiveResponse(client_sock, response, sizeof(Response), 0);
+            //             status = response->status;
+            //             readMessageResponse(response);
+            //             gameStatus = GAME_END;
+            //         }
+            //     }
+            //     break;
+            //}
+            //if (gameStatus == GAME_END)
+            //    break;
             //}
             // Step 5: Close socket
             close(client_sock);
