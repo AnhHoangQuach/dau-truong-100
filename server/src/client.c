@@ -63,18 +63,20 @@ void showQuestion(Question *question)
     printf("\n%s", question->answer3);
     printf("\n%s", question->answer4);
 }
-GtkWidget *username;
-GtkWidget *password;
+GtkWidget *username_widget;
+GtkWidget *password_widget;
+
+GAMEPLAY_STATUS status = UNAUTH;
 int clickedSubmit = 0;
 int client_sock, servPort;
 void clickedToLogin(GtkButton *login, gpointer data)
 {
     GtkBuilder *builder;
-    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
     GtkWidget *Login_Username;
     Login_Username = GTK_WIDGET(gtk_builder_get_object(builder, "Login_Username"));
     gtk_builder_connect_signals(builder, NULL);
-    username = GTK_WIDGET(gtk_builder_get_object(builder, "username"));
+    username_widget = GTK_WIDGET(gtk_builder_get_object(builder, "username"));
     g_signal_connect(Login_Username, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref(builder);
     gtk_widget_show(Login_Username);
@@ -90,7 +92,7 @@ char pass[30];
 
 void clickedToUserSubmit(GtkButton *Submit, gpointer data){
     strcpy(name, "USER ");
-    strcat(name, gtk_entry_get_text(username));
+    strcat(name, gtk_entry_get_text(username_widget));
     request = (Request *)malloc(sizeof(Request));
     response = (Response *)malloc(sizeof(Response));
     setOpcodeRequest(request, name);
@@ -98,33 +100,43 @@ void clickedToUserSubmit(GtkButton *Submit, gpointer data){
     receiveResponse(client_sock, response, sizeof(Response), 0);
     strcpy(buff, readMessageResponse(response));
     GtkBuilder *builder;
-    GtkWidget *message;
-    GtkWidget *server_message;
-    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
-    server_message = GTK_WIDGET(gtk_builder_get_object(builder, "server_message"));
+    GtkWidget *message_user;
+    GtkWidget *server_message_user;
+    builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
+    server_message_user = GTK_WIDGET(gtk_builder_get_object(builder, "server_message_user"));
     gtk_builder_connect_signals(builder, NULL);
-    message = GTK_WIDGET(gtk_builder_get_object(builder, "messa"));
-    gtk_entry_set_text(GTK_ENTRY(message), buff);
-    g_signal_connect(server_message, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    message_user = GTK_WIDGET(gtk_builder_get_object(builder, "messa_user"));
+    gtk_entry_set_text(GTK_ENTRY(message_user), buff);
+    g_signal_connect(server_message_user, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref(builder);
-    gtk_widget_show(server_message);
+    gtk_widget_show(server_message_user);
 }
 
-void clickedToOk(GtkButton *Ok, gpointer data){
+void clickedToOkUser(GtkButton *Ok, gpointer data){
     GtkBuilder *builder;
-    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
     GtkWidget *Login_Password;
     Login_Password = GTK_WIDGET(gtk_builder_get_object(builder, "Login_Password"));
     gtk_builder_connect_signals(builder, NULL);
-    password = GTK_WIDGET(gtk_builder_get_object(builder, "password"));
+    password_widget = GTK_WIDGET(gtk_builder_get_object(builder, "password"));
     g_signal_connect(Login_Password, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref(builder);
     gtk_widget_show(Login_Password);
 }
 
+void clickedToOkPass(GtkButton *Ok, gpointer data){
+    GtkBuilder *builder;
+    builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
+    GtkWidget *waiting_player;
+    waiting_player = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_player"));
+    gtk_builder_connect_signals(builder, NULL);
+    g_signal_connect( waiting_player, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_object_unref(builder);
+    gtk_widget_show(waiting_player);
+}
 void clickedToPassSubmit(GtkButton *Submit, gpointer data){
     strcpy(pass, "PASS ");
-    strcat(pass, gtk_entry_get_text(password));
+    strcat(pass, gtk_entry_get_text(password_widget));
     request = (Request *)malloc(sizeof(Request));
     response = (Response *)malloc(sizeof(Response));
     setOpcodeRequest(request, pass);
@@ -132,16 +144,16 @@ void clickedToPassSubmit(GtkButton *Submit, gpointer data){
     receiveResponse(client_sock, response, sizeof(Response), 0);
     strcpy(buff, readMessageResponse(response));
     GtkBuilder *builder;
-    GtkWidget *message;
-    GtkWidget *server_message;
-    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
-    server_message = GTK_WIDGET(gtk_builder_get_object(builder, "server_message"));
+    GtkWidget *message_pass;
+    GtkWidget *server_message_pass;
+    builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
+    server_message_pass = GTK_WIDGET(gtk_builder_get_object(builder, "server_message_pass"));
     gtk_builder_connect_signals(builder, NULL);
-    message = GTK_WIDGET(gtk_builder_get_object(builder, "messa"));
-    gtk_entry_set_text(GTK_ENTRY(message), buff);
-    g_signal_connect(server_message, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    message_pass = GTK_WIDGET(gtk_builder_get_object(builder, "messa_pass"));
+    gtk_entry_set_text(GTK_ENTRY(message_pass), buff);
+    g_signal_connect(server_message_pass, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref(builder);
-    gtk_widget_show(server_message);   
+    gtk_widget_show(server_message_pass);   
 }
 
 
@@ -151,7 +163,6 @@ int main(int argc, char const *argv[])
     struct sockaddr_in server_addr; /* server's address information */
     int msg_len, bytes_sent, bytes_received;
     char buff[BUFF_SIZE], code[BUFF_SIZE], data[BUFF_SIZE];
-    GAMEPLAY_STATUS status = UNAUTH;
     ques = (Question *)malloc(sizeof(Question));
     request = (Request *)malloc(sizeof(Request));
     response = (Response *)malloc(sizeof(Response));
@@ -195,7 +206,7 @@ int main(int argc, char const *argv[])
             }
     gtk_init(&argc, &argv);
 
-    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
 
     index = GTK_WIDGET(gtk_builder_get_object(builder, "Index"));
     gtk_builder_connect_signals(builder, NULL);
