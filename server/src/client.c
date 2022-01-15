@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <gtk/gtk.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -21,7 +22,7 @@ void loginTutorial()
     printf("\n-------------------Đấu trường 100-------------------");
     printf("\nInput to syntax: \n");
 }
-//gameplay for normal client
+// gameplay for normal client
 void gamePlayForNormalTutorial()
 {
     printf("-------------------Đấu trường 100-------------------\n");
@@ -39,7 +40,7 @@ void chooseTopicLevel()
     printf("\n--------------------------------------------------");
     printf("\nInput to syntax: \n");
 }
-//game play for special player
+// game play for special player
 void gamePlayForSpecialTutorial()
 {
     printf("-------------------Đấu trường 100-------------------\n");
@@ -57,6 +58,12 @@ void showQuestion(Question *question)
     printf("\n%s", question->answer3);
     printf("\n%s", question->answer4);
 }
+
+void clickedToLogin(GtkWidget *widget, gpointer data)
+{
+    gtk_widget_show(wi);
+}
+
 int main(int argc, char const *argv[])
 {
     int client_sock, servPort;
@@ -74,25 +81,46 @@ int main(int argc, char const *argv[])
     float score = 0;
     int inforamation = TRUE;
     int gameStatus = GAME_PLAYING;
+
+    // gtk
+    GtkBuilder *builder;
+    GtkWidget *index;
+
+    GtkWidget *k = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+
+    gtk_init(&argc, &argv);
+
+    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
+
+    index = GTK_WIDGET(gtk_builder_get_object(builder, "Index"));
+    gtk_builder_connect_signals(builder, NULL);
+
+    g_signal_connect(index, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+
+    g_object_unref(builder);
+
+    gtk_widget_show(index);
+    gtk_main();
+
     if (argc != 3)
     {
         printf("\nParams incorrect\n");
     }
     else
     {
-        //Check input : IP address & Port
+        // Check input : IP address & Port
         if (checkIPAndPort(argv[1], argv[2]) != 0)
         {
-            //Step 1: Construct socket
+            // Step 1: Construct socket
             client_sock = socket(AF_INET, SOCK_STREAM, 0);
 
-            //Step 2: Specify server address
+            // Step 2: Specify server address
             servPort = atoi(argv[2]);
 
             server_addr.sin_family = AF_INET;
             server_addr.sin_port = htons(servPort);
             server_addr.sin_addr.s_addr = inet_addr(argv[1]);
-            //Step 3: Request to connect server
+            // Step 3: Request to connect server
             if (connect(client_sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) < 0)
             {
                 printf("\nError!Can not connect to sever! Client exit imediately! ");
@@ -103,14 +131,14 @@ int main(int argc, char const *argv[])
                 switch (status)
                 {
                 case UNAUTH:
-                    //send request
+                    // send request
                     loginTutorial();
                     memset(buff, '\0', (strlen(buff) + 1));
                     fgets(buff, BUFF_SIZE, stdin);
                     buff[strlen(buff) - 1] = '\0';
                     setOpcodeRequest(request, buff);
                     sendRequest(client_sock, request, sizeof(Request), 0);
-                    //recv request
+                    // recv request
                     receiveResponse(client_sock, response, sizeof(Response), 0);
                     readMessageResponse(response);
                     status = response->status;
@@ -121,13 +149,13 @@ int main(int argc, char const *argv[])
                     }
                     break;
                 case WAITING_PLAYER:
-                    //send request
+                    // send request
                     requestGet(client_sock);
                     receiveResponse(client_sock, response, sizeof(Response), 0);
                     status = response->status;
                     if (status == WAITING_QUESTION)
                     {
-                        //read message
+                        // read message
                         readMessageResponse(response);
                         memset(luckyPlayer, '\0', (strlen(luckyPlayer) + 1));
                         strcpy(luckyPlayer, response->data);
@@ -143,9 +171,9 @@ int main(int argc, char const *argv[])
                     {
                         if (inforamation == FALSE)
                         {
-                            //request get information of game
+                            // request get information of game
                             requestCheckInformation(client_sock);
-                            //recv information of game
+                            // recv information of game
                             receiveInformation(client_sock, infor, sizeof(Information), 0);
                             if (infor->status == TRUE)
                             {
@@ -171,7 +199,7 @@ int main(int argc, char const *argv[])
                         }
                         else
                         {
-                            //request check status of game: PLAYING or END
+                            // request check status of game: PLAYING or END
                             requestGet(client_sock);
                             receiveResponse(client_sock, response, sizeof(Response), 0);
                             inforamation = FALSE;
@@ -182,14 +210,14 @@ int main(int argc, char const *argv[])
                             }
                             else
                             {
-                                //Choose topic
+                                // Choose topic
                                 chooseTopicLevel();
                                 memset(buff, '\0', (strlen(buff) + 1));
                                 fgets(buff, BUFF_SIZE, stdin);
                                 buff[strlen(buff) - 1] = '\0';
                                 setOpcodeRequest(request, buff);
                                 sendRequest(client_sock, request, sizeof(Request), 0);
-                                //recv response
+                                // recv response
                                 receiveResponse(client_sock, response, sizeof(Response), 0);
                                 status = response->status;
                                 if (status == PLAYING)
@@ -207,7 +235,7 @@ int main(int argc, char const *argv[])
                     }
                     else
                     {
-                        //check status of game: playing or end?
+                        // check status of game: playing or end?
                         requestGet(client_sock);
                         receiveResponse(client_sock, response, sizeof(Response), 0);
                         if (response->status == END_GAME)
@@ -217,7 +245,7 @@ int main(int argc, char const *argv[])
                         }
                         else
                         {
-                            //rcv response from ser
+                            // rcv response from ser
                             requestGet(client_sock);
                             receiveResponse(client_sock, response, sizeof(Response), 0);
                             status = response->status;
@@ -239,14 +267,14 @@ int main(int argc, char const *argv[])
                             showQuestion(ques);
                             printf("\nCâu trả lời: \n");
                             gamePlayForSpecialTutorial();
-                            //check if request->code == HELP
+                            // check if request->code == HELP
                             if (strcmp(buff, "HELP") == 0)
                             {
                                 requestGetHelp(client_sock);
                             }
                             else
                             {
-                                //send request
+                                // send request
                                 memset(buff, '\0', (strlen(buff) + 1));
                                 fgets(buff, BUFF_SIZE, stdin);
                                 buff[strlen(buff) - 1] = '\0';
@@ -254,7 +282,7 @@ int main(int argc, char const *argv[])
                                 setOpcodeRequest(request, buff);
                                 sendRequest(client_sock, request, sizeof(Request), 0);
                             }
-                            //rcv request
+                            // rcv request
                             receiveResponse(client_sock, response, sizeof(Response), 0);
 
                             status = response->status;
@@ -263,14 +291,14 @@ int main(int argc, char const *argv[])
                             {
                                 existQuestion = FALSE;
                             }
-                            if (response->code == USER_USED_HINT_SUCCESS) //use hint
+                            if (response->code == USER_USED_HINT_SUCCESS) // use hint
                                 help = TRUE;
                         }
                         else
                         {
-                            //request get question
+                            // request get question
                             requestGet(client_sock);
-                            //rcv question
+                            // rcv question
                             receiveQuestion(client_sock, ques, sizeof(Question), 0);
                             existQuestion = TRUE;
                             questionNumber++;
@@ -285,13 +313,13 @@ int main(int argc, char const *argv[])
                             showQuestion(ques);
                             printf("\nCâu trả lời: \n");
                             gamePlayForNormalTutorial();
-                            //send answer
+                            // send answer
                             memset(buff, '\0', (strlen(buff) + 1));
                             fgets(buff, BUFF_SIZE, stdin);
                             buff[strlen(buff) - 1] = '\0';
                             setOpcodeRequest(request, buff);
                             sendRequest(client_sock, request, sizeof(Request), 0);
-                            //recv response
+                            // recv response
                             receiveResponse(client_sock, response, sizeof(Response), 0);
                             status = response->status;
                             if (status == WAITING_QUESTION)
@@ -303,9 +331,9 @@ int main(int argc, char const *argv[])
                         }
                         else
                         {
-                            //request get question
+                            // request get question
                             requestGet(client_sock);
-                            //recv question
+                            // recv question
                             receiveQuestion(client_sock, ques, sizeof(Question), 0);
                             existQuestion = TRUE;
                             questionNumber++;
@@ -317,7 +345,7 @@ int main(int argc, char const *argv[])
                     {
                         if (inforamation == FALSE)
                         {
-                            //get result
+                            // get result
                             requestCheckInformation(client_sock);
                             receiveInformation(client_sock, infor, sizeof(Information), 0);
                             if (infor->status == TRUE)
@@ -328,7 +356,7 @@ int main(int argc, char const *argv[])
                         }
                         else
                         {
-                            //request logout
+                            // request logout
                             requestLogout(client_sock, username);
                             receiveResponse(client_sock, response, sizeof(Response), 0);
                             status = response->status;
@@ -348,7 +376,7 @@ int main(int argc, char const *argv[])
                         }
                         else
                         {
-                            //request logout
+                            // request logout
                             requestLogout(client_sock, username);
                             receiveResponse(client_sock, response, sizeof(Response), 0);
                             status = response->status;
@@ -361,7 +389,7 @@ int main(int argc, char const *argv[])
                 if (gameStatus == GAME_END)
                     break;
             }
-            //Step 5: Close socket
+            // Step 5: Close socket
             close(client_sock);
             return 0;
         }

@@ -1,6 +1,6 @@
 CFLAGS = -c -Wall
 CC = gcc
-LIBS =  -lm 
+LIBS =  -lm 	
 
 all: client server 
 
@@ -11,10 +11,10 @@ server.o: server.c
 	${CC} ${CFLAGS} server.c
 
 client: client.o protocol.o tool.o valid.o gameplay.o
-	${CC} protocol.o tool.o valid.o client.o gameplay.o -o client
+	${CC} -rdynamic protocol.o tool.o valid.o client.o gameplay.o -o client `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
 
 client.o: client.c 
-	${CC} ${CFLAGS} client.c
+	${CC} -rdynamic ${CFLAGS} client.c `pkg-config --cflags gtk+-3.0` `pkg-config --libs gtk+-3.0`
 
 question.o: question.c
 	${CC} ${CFLAGS} question.c
