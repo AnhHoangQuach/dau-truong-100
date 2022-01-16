@@ -16,17 +16,7 @@
 // Request *request = (Request *)malloc(sizeof(Request));
 // Response *response = (Response *)malloc(sizeof(Response));
 // Information *infor = (Information *)malloc(sizeof(Information));
-// login tutorial
-void loginTutorial()
-{
-    printf("-------------------Đấu trường 100-------------------\n");
-    printf("\nLogin Tutorial: ");
-    printf("\n\tSignin syntax: USER username");
-    printf("\n\tRegister syntax: REGISTER username password");
-    printf("\n\tPassword syntax: PASS password");
-    printf("\n-------------------Đấu trường 100-------------------");
-    printf("\nInput to syntax: \n");
-}
+
 // gameplay for normal client
 void gamePlayForNormalTutorial()
 {
@@ -80,6 +70,7 @@ char buff[BUFF_SIZE];
 char pass[30];
 GtkWidget *Login_Password;
 GtkWidget *waiting_window;
+GtkWidget *waiting_mess;
 
 void clickedToLogin(GtkButton *login, gpointer data)
 {
@@ -149,71 +140,51 @@ void clickedToPassSubmit(GtkButton *Submit, gpointer data)
     if (response->code == PASSWORD_CORRECT)
         gtk_widget_hide(Login_Username);
     status = response->status;
-    buff[strlen(buff)-1] = '\0';
+    buff[strlen(buff) - 1] = '\0';
     GtkBuilder *builder;
-    GtkWidget *waiting_mess;
+    GtkWidget *yourname;
     builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
     waiting_window = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_window"));
     gtk_builder_connect_signals(builder, NULL);
     waiting_mess = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_mess"));
-    if(strcmp(buff, "Waiting other player... ") == 0){
-        gtk_entry_set_text(GTK_ENTRY(waiting_mess), "Waiting other player... "); 
+    yourname = GTK_WIDGET(gtk_builder_get_object(builder, "yourname"));
+    if (strcmp(buff, "Waiting other player... ") == 0)
+    {
+        gtk_entry_set_text(GTK_ENTRY(waiting_mess), "Waiting other player... ");
+        gtk_label_set_text(GTK_LABEL(yourname), name);
         gtk_widget_show(waiting_window);
         g_signal_connect(waiting_window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
         g_object_unref(builder);
+        gtk_widget_hide(Login_Password);
     }
-    else 
+ 
+    else
         show_message(Login_Password, GTK_MESSAGE_INFO, "Thong bao", buff);
-    
 }
-// if (status == WAITING_QUESTION)
-//     {
-//         memset(luckyPlayer, '\0', (strlen(luckyPlayer) + 1));
-//         strcpy(luckyPlayer, response->data);
-//         printf("Lucky player: %s\n", luckyPlayer);
-//         if (strcmp(luckyPlayer, name) == 0)
-//             lucky = TRUE;
-//         else
-//             lucky = FALSE;
 
-//         if (lucky == FALSE)
-//         {
-//             GtkBuilder *builder;
-//             GtkWidget *Non_Lucky_mess;
-//             requestGet(client_sock);
-//             receiveResponse(client_sock, response, sizeof(Response), 0);
-//             if (response->status == END_GAME)
-//             {
-//                 status = response->status;
-//                 strcpy(buff, readMessageResponse(response));
-//             }
-//             else
-//             {
-//                 requestGet(client_sock);
-//                 receiveResponse(client_sock, response, sizeof(Response), 0);
-//                 status = response->status;
-//                 if (status == PLAYING)
-//                 {
-//                     strcpy(topic, response->data);
-//                     strcpy(buff, readMessageResponse(response));
-//                 }
-//             }
+void clickedToWaitingOk(GtkButton *Ok, gpointer data)
+{
+    requestGet(client_sock);
+    receiveResponse(client_sock, response, sizeof(Response), 0);
+    status = response->status;
+    strcpy(buff, readMessageResponse(response));
+    buff[strlen(buff) - 1] = '\0';
+    if (response->status == WAITING_QUESTION)
+    {
+        strcat(buff, "Nguoi choi may man do la ");
+        gtk_entry_set_text(GTK_ENTRY(waiting_mess), strcat(buff, response->data));
+        memset(luckyPlayer, '\0', (strlen(luckyPlayer) + 1));
+        strcpy(luckyPlayer, response->data);
+        if (strcmp(luckyPlayer, name) == 0)
+            lucky = TRUE;
+        else
+            lucky = FALSE;
+    }
+    
+    else{
+        gtk_entry_set_text(GTK_ENTRY(waiting_mess), "Waiting other player... ");
+    }
 
-//             builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
-//             Non_lucky_player = GTK_WIDGET(gtk_builder_get_object(builder, "Non_lucky_player"));
-//             gtk_builder_connect_signals(builder, NULL);
-//             // Non_Lucky_mess = GTK_WIDGET(gtk_builder_get_object(builder, "Non_Lucky_mess"));
-//             // gtk_entry_set_text(GTK_ENTRY(Non_Lucky_mess), "haha"); 
-            // gtk_widget_show(Non_lucky_player);
-            // g_signal_connect(Non_lucky_player, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-            // g_object_unref(builder);
-//         }
-//         else
-//         {
-//             gtk_widget_hide(Non_lucky_player);
-//         }
-//     }
-//     else
 int main(int argc, char const *argv[])
 {
     char username[BUFF_SIZE], topic[BUFF_SIZE];

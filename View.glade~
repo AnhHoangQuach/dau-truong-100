@@ -532,13 +532,56 @@ Input to syntax:
   </object>
   <object class="GtkWindow" id="waiting_window">
     <property name="can_focus">False</property>
+    <property name="window_position">center-always</property>
+    <property name="default_width">500</property>
+    <property name="default_height">300</property>
     <child type="titlebar">
       <placeholder/>
     </child>
     <child>
-      <object class="GtkEntry" id="waiting_mess">
+      <object class="GtkFixed">
         <property name="visible">True</property>
-        <property name="can_focus">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkEntry" id="waiting_mess">
+            <property name="width_request">283</property>
+            <property name="height_request">-1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="margin_bottom">1</property>
+          </object>
+          <packing>
+            <property name="x">166</property>
+            <property name="y">89</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="waiting_ok">
+            <property name="label" translatable="yes">Ok</property>
+            <property name="width_request">134</property>
+            <property name="height_request">42</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="clickedToWaitingOk" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">196</property>
+            <property name="y">238</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="yourname">
+            <property name="width_request">231</property>
+            <property name="height_request">32</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="x">70</property>
+            <property name="y">40</property>
+          </packing>
+        </child>
       </object>
     </child>
   </object>
