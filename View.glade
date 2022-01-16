@@ -402,6 +402,18 @@ Input to syntax:
       </object>
     </child>
   </object>
+  <object class="GtkWindow" id="Non_lucky_player">
+    <property name="can_focus">False</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkEntry" id="Non_Lucky_mess">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+      </object>
+    </child>
+  </object>
   <object class="GtkWindow" id="Register">
     <property name="can_focus">False</property>
     <property name="window_position">center-always</property>
@@ -515,6 +527,18 @@ Input to syntax:
             <property name="y">199</property>
           </packing>
         </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="waiting_window">
+    <property name="can_focus">False</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkEntry" id="waiting_mess">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
       </object>
     </child>
   </object>

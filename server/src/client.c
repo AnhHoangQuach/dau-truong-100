@@ -67,11 +67,19 @@ GtkWidget *username_widget;
 GtkWidget *password_widget;
 GtkWidget *index_;
 
-
 GAMEPLAY_STATUS status = UNAUTH;
 int clickedSubmit = 0;
 int client_sock, servPort;
 GtkWidget *Login_Username;
+int lucky;
+char name[30], luckyPlayer[BUFF_SIZE], topic[BUFF_SIZE];
+Question *ques = NULL;
+Request *request = NULL;
+Response *response = NULL;
+char buff[BUFF_SIZE];
+char pass[30];
+GtkWidget *Login_Password;
+GtkWidget *waiting_window;
 
 void clickedToLogin(GtkButton *login, gpointer data)
 {
@@ -83,18 +91,7 @@ void clickedToLogin(GtkButton *login, gpointer data)
     g_signal_connect(Login_Username, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref(builder);
     gtk_widget_show(Login_Username);
-    
-    
 }
-
-char name[30];
-Question *ques = NULL;
-Request *request = NULL;
-Response *response = NULL;
-char buff[BUFF_SIZE];
-char pass[30];
-GtkWidget *Login_Password;
-GtkWidget *sucess;
 
 void clickedToUserSubmit(GtkButton *Submit, gpointer data)
 {
@@ -126,7 +123,6 @@ void clickedToUserSubmit(GtkButton *Submit, gpointer data)
     g_object_unref(builder);
 }
 
-
 void show_message(GtkWidget *parent, GtkMessageType type, char *mms, char *content)
 {
     GtkWidget *mdialog;
@@ -140,8 +136,6 @@ void show_message(GtkWidget *parent, GtkMessageType type, char *mms, char *conte
     gtk_widget_destroy(mdialog);
 }
 
-
-
 void clickedToPassSubmit(GtkButton *Submit, gpointer data)
 {
     strcpy(pass, "PASS ");
@@ -152,23 +146,77 @@ void clickedToPassSubmit(GtkButton *Submit, gpointer data)
     sendRequest(client_sock, request, sizeof(Request), 0);
     receiveResponse(client_sock, response, sizeof(Response), 0);
     strcpy(buff, readMessageResponse(response));
-    if(response->code == PASSWORD_CORRECT)
-        gtk_widget_destroy(Login_Username);
-    show_message(Login_Password, GTK_MESSAGE_INFO, "Thong bao", buff);
-
+    if (response->code == PASSWORD_CORRECT)
+        gtk_widget_hide(Login_Username);
+    status = response->status;
+    buff[strlen(buff)-1] = '\0';
+    GtkBuilder *builder;
+    GtkWidget *waiting_mess;
+    builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
+    waiting_window = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_window"));
+    gtk_builder_connect_signals(builder, NULL);
+    waiting_mess = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_mess"));
+    if(strcmp(buff, "Waiting other player... ") == 0){
+        gtk_entry_set_text(GTK_ENTRY(waiting_mess), "Waiting other player... "); 
+        gtk_widget_show(waiting_window);
+        g_signal_connect(waiting_window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+        g_object_unref(builder);
+    }
+    else 
+        show_message(Login_Password, GTK_MESSAGE_INFO, "Thong bao", buff);
+    
 }
+// if (status == WAITING_QUESTION)
+//     {
+//         memset(luckyPlayer, '\0', (strlen(luckyPlayer) + 1));
+//         strcpy(luckyPlayer, response->data);
+//         printf("Lucky player: %s\n", luckyPlayer);
+//         if (strcmp(luckyPlayer, name) == 0)
+//             lucky = TRUE;
+//         else
+//             lucky = FALSE;
 
-void clickSucessOk(GtkButton *Ok, gpointer data){
-    response = (Response *)malloc(sizeof(Response));
-    receiveResponse(client_sock, response, sizeof(Response), 0);
-    strcpy(buff, readMessageResponse(response));
-    printf("%s\n", buff);
-    show_message(sucess, GTK_MESSAGE_INFO, "Thong bao", buff);
-}
+//         if (lucky == FALSE)
+//         {
+//             GtkBuilder *builder;
+//             GtkWidget *Non_Lucky_mess;
+//             requestGet(client_sock);
+//             receiveResponse(client_sock, response, sizeof(Response), 0);
+//             if (response->status == END_GAME)
+//             {
+//                 status = response->status;
+//                 strcpy(buff, readMessageResponse(response));
+//             }
+//             else
+//             {
+//                 requestGet(client_sock);
+//                 receiveResponse(client_sock, response, sizeof(Response), 0);
+//                 status = response->status;
+//                 if (status == PLAYING)
+//                 {
+//                     strcpy(topic, response->data);
+//                     strcpy(buff, readMessageResponse(response));
+//                 }
+//             }
 
+//             builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
+//             Non_lucky_player = GTK_WIDGET(gtk_builder_get_object(builder, "Non_lucky_player"));
+//             gtk_builder_connect_signals(builder, NULL);
+//             // Non_Lucky_mess = GTK_WIDGET(gtk_builder_get_object(builder, "Non_Lucky_mess"));
+//             // gtk_entry_set_text(GTK_ENTRY(Non_Lucky_mess), "haha"); 
+            // gtk_widget_show(Non_lucky_player);
+            // g_signal_connect(Non_lucky_player, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+            // g_object_unref(builder);
+//         }
+//         else
+//         {
+//             gtk_widget_hide(Non_lucky_player);
+//         }
+//     }
+//     else
 int main(int argc, char const *argv[])
 {
-    char username[BUFF_SIZE], luckyPlayer[BUFF_SIZE], topic[BUFF_SIZE];
+    char username[BUFF_SIZE], topic[BUFF_SIZE];
     struct sockaddr_in server_addr; /* server's address information */
     int msg_len, bytes_sent, bytes_received;
     char buff[BUFF_SIZE], code[BUFF_SIZE], data[BUFF_SIZE];
@@ -184,7 +232,6 @@ int main(int argc, char const *argv[])
 
     // gtk
     GtkBuilder *builder;
-    
 
     //GtkWidget *k = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
