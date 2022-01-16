@@ -65,11 +65,14 @@ void showQuestion(Question *question)
 }
 GtkWidget *username_widget;
 GtkWidget *password_widget;
+GtkWidget *index_;
+
 
 GAMEPLAY_STATUS status = UNAUTH;
 int clickedSubmit = 0;
 int client_sock, servPort;
 GtkWidget *Login_Username;
+
 void clickedToLogin(GtkButton *login, gpointer data)
 {
     GtkBuilder *builder;
@@ -80,6 +83,8 @@ void clickedToLogin(GtkButton *login, gpointer data)
     g_signal_connect(Login_Username, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref(builder);
     gtk_widget_show(Login_Username);
+    
+    
 }
 
 char name[30];
@@ -89,6 +94,8 @@ Response *response = NULL;
 char buff[BUFF_SIZE];
 char pass[30];
 GtkWidget *Login_Password;
+GtkWidget *sucess;
+
 void clickedToUserSubmit(GtkButton *Submit, gpointer data)
 {
     strcpy(name, "USER ");
@@ -112,6 +119,7 @@ void clickedToUserSubmit(GtkButton *Submit, gpointer data)
     }
     else
     {
+        gtk_widget_hide(index_);
         gtk_widget_show(Login_Password);
     }
     g_signal_connect(Login_Password, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -144,18 +152,18 @@ void clickedToPassSubmit(GtkButton *Submit, gpointer data)
     sendRequest(client_sock, request, sizeof(Request), 0);
     receiveResponse(client_sock, response, sizeof(Response), 0);
     strcpy(buff, readMessageResponse(response));
-    if(strcmp(response->message, "Login successful ") != 0)
-        show_message(Login_Password, GTK_MESSAGE_INFO, "Thong bao", buff);
-    else{
-        GtkBuilder *builder;
-        builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
-        GtkWidget *waiting_player;
-        waiting_player = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_player"));
-        gtk_builder_connect_signals(builder, NULL);
-        g_signal_connect(waiting_player, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-        g_object_unref(builder);
-        gtk_widget_show(waiting_player);       
-    }
+    if(response->code == PASSWORD_CORRECT)
+        gtk_widget_destroy(Login_Username);
+    show_message(Login_Password, GTK_MESSAGE_INFO, "Thong bao", buff);
+
+}
+
+void clickSucessOk(GtkButton *Ok, gpointer data){
+    response = (Response *)malloc(sizeof(Response));
+    receiveResponse(client_sock, response, sizeof(Response), 0);
+    strcpy(buff, readMessageResponse(response));
+    printf("%s\n", buff);
+    show_message(sucess, GTK_MESSAGE_INFO, "Thong bao", buff);
 }
 
 int main(int argc, char const *argv[])
@@ -176,7 +184,7 @@ int main(int argc, char const *argv[])
 
     // gtk
     GtkBuilder *builder;
-    GtkWidget *index;
+    
 
     //GtkWidget *k = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
@@ -207,14 +215,14 @@ int main(int argc, char const *argv[])
 
             builder = gtk_builder_new_from_file("/home/thien/Downloads/dau-truong-100/View.glade");
 
-            index = GTK_WIDGET(gtk_builder_get_object(builder, "Index"));
+            index_ = GTK_WIDGET(gtk_builder_get_object(builder, "Index"));
             gtk_builder_connect_signals(builder, NULL);
 
-            g_signal_connect(index, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+            g_signal_connect(index_, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
             g_object_unref(builder);
 
-            gtk_widget_show(index);
+            gtk_widget_show(index_);
             gtk_main();
             // while (1)
             // {

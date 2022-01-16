@@ -518,18 +518,4 @@ Input to syntax:
       </object>
     </child>
   </object>
-  <object class="GtkWindow" id="waiting_player">
-    <property name="can_focus">False</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
-    <child>
-      <object class="GtkLabel" id="wait_label">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Đang đợi người chơi khác
-</property>
-      </object>
-    </child>
-  </object>
 </interface>
