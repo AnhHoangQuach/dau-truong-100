@@ -8,3 +8,5 @@
 8	haha	haha	1
 9	hoanganh	hoanganh	0
 9	dat	dat	1
+11	thien	thien	1
+12	abc	abc	1

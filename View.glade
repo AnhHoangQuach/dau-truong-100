@@ -195,6 +195,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="margin_right">1</property>
+            <signal name="clicked" handler="clickedToRegister" swapped="no"/>
           </object>
           <packing>
             <property name="x">150</property>
@@ -402,18 +403,6 @@ Input to syntax:
       </object>
     </child>
   </object>
-  <object class="GtkWindow" id="Non_lucky_player">
-    <property name="can_focus">False</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
-    <child>
-      <object class="GtkEntry" id="Non_Lucky_mess">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-      </object>
-    </child>
-  </object>
   <object class="GtkWindow" id="Register">
     <property name="can_focus">False</property>
     <property name="window_position">center-always</property>
@@ -440,7 +429,7 @@ Input to syntax:
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="userEntry">
+          <object class="GtkEntry" id="user_regis">
             <property name="width_request">289</property>
             <property name="height_request">35</property>
             <property name="visible">True</property>
@@ -452,7 +441,7 @@ Input to syntax:
           </packing>
         </child>
         <child>
-          <object class="GtkEntry">
+          <object class="GtkEntry" id="pass_regis">
             <property name="width_request">289</property>
             <property name="height_request">36</property>
             <property name="visible">True</property>
@@ -497,34 +486,11 @@ Input to syntax:
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <signal name="clicked" handler="clickedToResigerSubmit" swapped="no"/>
           </object>
           <packing>
             <property name="x">196</property>
             <property name="y">238</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="messageUser">
-            <property name="width_request">286</property>
-            <property name="height_request">37</property>
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="x">168</property>
-            <property name="y">126</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="messagePassword">
-            <property name="width_request">287</property>
-            <property name="height_request">38</property>
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="x">169</property>
-            <property name="y">199</property>
           </packing>
         </child>
       </object>
