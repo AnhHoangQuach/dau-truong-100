@@ -114,7 +114,7 @@ void setMessageResponse(Response *msg)
       strcpy(msg->message, "Game ready ");
       break;
     case GAME_NOT_READY:
-      strcpy(msg->message, "Waiting orther player... ");
+      strcpy(msg->message, "Waiting other player... ");
       break;
     case TOPIC_USER_DONT_CHOOSE_LEVEL:
       strcpy(msg->message, "");
