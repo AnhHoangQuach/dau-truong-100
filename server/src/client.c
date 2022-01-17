@@ -224,6 +224,7 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
     {
         if (lucky == TRUE)
         {
+            printf("1\n");
             if (information == FALSE)
             {
                 requestCheckInformation(client_sock);
@@ -264,6 +265,7 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
         else
         {
             // check status of game: playing or end?
+            printf("2\n");
             requestGet(client_sock);
             receiveResponse(client_sock, response, sizeof(Response), 0);
             if (response->status == END_GAME)
