@@ -63,13 +63,13 @@ int clickedSubmit = 0;
 int client_sock, servPort;
 GtkWidget *Login_Username;
 int lucky;
-char name[30], luckyPlayer[BUFF_SIZE], topic[BUFF_SIZE];
+char name[30], luckyPlayer[BUFF_SIZE], topic[BUFF_SIZE], buff[BUFF_SIZE], pass[30];
 Question *ques = NULL;
 Request *request = NULL;
 Response *response = NULL;
 Information *infor = NULL;
-char buff[BUFF_SIZE];
-char pass[30];
+float score = 0;
+int gameStatus = GAME_PLAYING;
 char register_line[BUFF_SIZE];
 char buff1[BUFF_SIZE];
 int information = TRUE;
@@ -236,9 +236,20 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
                     information = TRUE;
                     if (help == FALSE)
                     {
+                        score = score + infor->score;
+                        printf("Số người trả lời sai câu hỏi trên: %d\n", infor->playerAnswerWrong);
+                        printf("Số điểm bạn nhận được: %.1f\n", infor->score);
+                        printf("Số người cùng chơi: %d\n", infor->playerPlaying);
+                        printf("Số điểm của bạn hiện tại: %.1f\n", score);
                     }
                     else
                     {
+                        score = score - infor->score;
+                        printf("Số điểm bạn nhận bị trừ: %.1f\n", infor->score);
+                        printf("Số người trả lời sai câu hỏi trên: %d\n", infor->playerAnswerWrong);
+                        printf("Số người cùng chơi: %d\n", infor->playerPlaying);
+                        printf("Số điểm của bạn hiện tại: %.1f\n", score);
+                        help = FALSE;
                     }
                 }
             }
@@ -261,12 +272,12 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
                     g_signal_connect(TopicChoice, "destroy", G_CALLBACK(gtk_main_quit), NULL);
                     g_object_unref(builder);
                     gtk_widget_show(TopicChoice);
+                    gtk_widget_hide(waiting_window);
                 }
             }
         }
         else
         {
-            // check status of game: playing or end?
             GtkBuilder *builder;
             builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
             GameView1 = GTK_WIDGET(gtk_builder_get_object(builder, "GameView1"));
@@ -274,6 +285,7 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
             g_signal_connect(GameView1, "destroy", G_CALLBACK(gtk_main_quit), NULL);
             g_object_unref(builder);
             gtk_widget_show(GameView1);
+            gtk_widget_hide(waiting_window);
         }
     }
     else
@@ -281,6 +293,29 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
         gtk_entry_set_text(GTK_ENTRY(waiting_mess), "Waiting other player... ");
     }
 }
+
+void chooseTopicEasy(GtkButton *easy, gpointer data)
+{
+    strcpy(buff, "TOPIC EASY");
+    request = (Request *)malloc(sizeof(Request));
+    response = (Response *)malloc(sizeof(Response));
+    setOpcodeRequest(request, buff);
+    sendRequest(client_sock, request, sizeof(Request), 0);
+    receiveResponse(client_sock, response, sizeof(Response), 0);
+
+    status = response->status;
+    if (status == PLAYING)
+    {
+        strcpy(topic, response->data);
+        // readMessageResponse(response);
+    }
+    if (status == WAITING_QUESTION)
+    {
+        // readMessageResponse(response);
+        information = TRUE;
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     char username[BUFF_SIZE], topic[BUFF_SIZE];
