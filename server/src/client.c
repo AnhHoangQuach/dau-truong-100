@@ -56,6 +56,7 @@ void showQuestion(Question *question)
 GtkWidget *username_widget;
 GtkWidget *password_widget;
 GtkWidget *index_;
+int choose_lucky = 0;
 
 GAMEPLAY_STATUS status = UNAUTH;
 int clickedSubmit = 0;
@@ -196,18 +197,6 @@ void clickedToPassSubmit(GtkButton *Submit, gpointer data)
         g_signal_connect(waiting_window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
         g_object_unref(builder);
         gtk_widget_hide(Login_Password);
-        requestGet(client_sock);
-        receiveResponse(client_sock, response, sizeof(Response), 0);
-        if (response->status == WAITING_QUESTION)
-        {
-            memset(luckyPlayer, '\0', (strlen(luckyPlayer) + 1));
-            strcpy(luckyPlayer, response->data);
-            printf("%s\n", luckyPlayer);
-            if (strcmp(luckyPlayer, name) == 0)
-                lucky = TRUE;
-            else
-                lucky = FALSE;
-        }
     }
 
     else
@@ -216,15 +205,28 @@ void clickedToPassSubmit(GtkButton *Submit, gpointer data)
 
 void clickedToWaitingOk(GtkButton *Ok, gpointer data)
 {
-    infor = (Information *)malloc(sizeof(Information));
-    requestGet(client_sock);
-    receiveResponse(client_sock, response, sizeof(Response), 0);
-    status = response->status;
-    if (response->status == WAITING_QUESTION)
+    if (choose_lucky == 0)
     {
+        requestGet(client_sock);
+        receiveResponse(client_sock, response, sizeof(Response), 0);
+        if (response->status == WAITING_QUESTION)
+        {
+            memset(luckyPlayer, '\0', (strlen(luckyPlayer) + 1));
+            strcpy(luckyPlayer, response->data);
+            printf("%s\n", luckyPlayer);
+            if (strcmp(luckyPlayer, gtk_entry_get_text(username_widget)) == 0)
+                lucky = TRUE;
+            else
+                lucky = FALSE;
+        }
+        choose_lucky = 1;
+    }
+    if (response->status == WAITING_QUESTION && choose_lucky == 1)
+    {
+        infor = (Information *)malloc(sizeof(Information));
         if (lucky == TRUE)
         {
-            printf("1\n");
+
             if (information == FALSE)
             {
                 requestCheckInformation(client_sock);
@@ -248,7 +250,7 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
                 if (response->status == END_GAME)
                 {
                     status = response->status;
-                    readMessageResponse(response);
+                    // readMessageResponse(response);
                 }
                 else
                 {
@@ -265,26 +267,13 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
         else
         {
             // check status of game: playing or end?
-            printf("2\n");
-            requestGet(client_sock);
-            receiveResponse(client_sock, response, sizeof(Response), 0);
-            if (response->status == END_GAME)
-            {
-                status = response->status;
-                readMessageResponse(response);
-            }
-            else
-            {
-                // rcv response from ser
-                requestGet(client_sock);
-                receiveResponse(client_sock, response, sizeof(Response), 0);
-                status = response->status;
-                if (status == PLAYING)
-                {
-                    strcpy(topic, response->data);
-                    readMessageResponse(response);
-                }
-            }
+            GtkBuilder *builder;
+            builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
+            GameView1 = GTK_WIDGET(gtk_builder_get_object(builder, "GameView1"));
+            gtk_builder_connect_signals(builder, NULL);
+            g_signal_connect(GameView1, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+            g_object_unref(builder);
+            gtk_widget_show(GameView1);
         }
     }
     else
