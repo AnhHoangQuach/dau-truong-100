@@ -132,9 +132,9 @@ void setMessageResponse(Response *msg)
   }
 }
 
-char* readMessageResponse(Response *msg)
+char *readMessageResponse(Response *msg)
 {
-  char* buffer = malloc(1024);
+  char *buffer = malloc(1024);
   memset(buffer, '\0', (strlen(buffer) + 1));
   if (msg->code != NULL)
   {
