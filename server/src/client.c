@@ -50,7 +50,7 @@ char dapan;
 void clickedToLogin(GtkButton *login, gpointer data)
 {
     GtkBuilder *builder;
-    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
     Login_Username = GTK_WIDGET(gtk_builder_get_object(builder, "Login_Username"));
     gtk_builder_connect_signals(builder, NULL);
     username_widget = GTK_WIDGET(gtk_builder_get_object(builder, "username"));
@@ -62,7 +62,7 @@ void clickedToLogin(GtkButton *login, gpointer data)
 void clickedToRegister(GtkButton *regist, gpointer data)
 {
     GtkBuilder *builder;
-    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
     Register = GTK_WIDGET(gtk_builder_get_object(builder, "Register"));
     gtk_builder_connect_signals(builder, NULL);
     user_regis = GTK_WIDGET(gtk_builder_get_object(builder, "user_regis"));
@@ -99,7 +99,7 @@ void clickedToUserSubmit(GtkButton *Submit, gpointer data)
     strcpy(buff, readMessageResponse(response));
     status = response->status;
     GtkBuilder *builder;
-    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
     Login_Password = GTK_WIDGET(gtk_builder_get_object(builder, "Login_Password"));
     gtk_builder_connect_signals(builder, NULL);
     password_widget = GTK_WIDGET(gtk_builder_get_object(builder, "password"));
@@ -147,7 +147,7 @@ void clickedToPassSubmit(GtkButton *Submit, gpointer data)
     buff[strlen(buff) - 1] = '\0';
     GtkBuilder *builder;
     GtkWidget *yourname;
-    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
     waiting_window = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_window"));
     gtk_builder_connect_signals(builder, NULL);
     waiting_mess = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_mess"));
@@ -230,7 +230,7 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
                 else
                 {
                     GtkBuilder *builder;
-                    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+                    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
                     TopicChoice = GTK_WIDGET(gtk_builder_get_object(builder, "TopicChoice"));
                     gtk_builder_connect_signals(builder, NULL);
                     g_signal_connect(TopicChoice, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -250,7 +250,7 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
             }
             else
             {
-                //rcv response from ser
+                // rcv response from ser
                 requestGet(client_sock);
                 receiveResponse(client_sock, response, sizeof(Response), 0);
                 status = response->status;
@@ -263,7 +263,7 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
                     questionNumber++;
                     GtkBuilder *builder;
                     GtkWidget *question1, *ans_1, *ans_2, *ans_3, *ans_4;
-                    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+                    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
                     GameView1 = GTK_WIDGET(gtk_builder_get_object(builder, "GameView1"));
                     gtk_builder_connect_signals(builder, NULL);
                     question1 = GTK_WIDGET(gtk_builder_get_object(builder, "question1"));
@@ -312,7 +312,7 @@ void chooseTopicEasy(GtkButton *easy, gpointer data)
     {
         GtkBuilder *builder;
         GtkWidget *question, *mainuser_A, *mainuser_B, *mainuser_C, *mainuser_D;
-        builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+        builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
         GameView = GTK_WIDGET(gtk_builder_get_object(builder, "GameView"));
         gtk_builder_connect_signals(builder, NULL);
         question = GTK_WIDGET(gtk_builder_get_object(builder, "question"));
@@ -354,7 +354,7 @@ void chooseTopicNormal(GtkButton *easy, gpointer data)
     {
         GtkBuilder *builder;
         GtkWidget *question, *mainuser_A, *mainuser_B, *mainuser_C, *mainuser_D;
-        builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+        builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
         GameView = GTK_WIDGET(gtk_builder_get_object(builder, "GameView"));
         gtk_builder_connect_signals(builder, NULL);
         question = GTK_WIDGET(gtk_builder_get_object(builder, "question"));
@@ -396,7 +396,7 @@ void chooseTopicHard(GtkButton *easy, gpointer data)
     {
         GtkBuilder *builder;
         GtkWidget *question, *mainuser_A, *mainuser_B, *mainuser_C, *mainuser_D;
-        builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+        builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
         GameView = GTK_WIDGET(gtk_builder_get_object(builder, "GameView"));
         gtk_builder_connect_signals(builder, NULL);
         question = GTK_WIDGET(gtk_builder_get_object(builder, "question"));
@@ -423,7 +423,7 @@ void clickedHelp(GtkButton *helper)
     receiveResponse(client_sock, response, sizeof(Response), 0);
     status = response->status;
     GtkBuilder *builder;
-    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
     TopicChoice = GTK_WIDGET(gtk_builder_get_object(builder, "TopicChoice"));
     gtk_builder_connect_signals(builder, NULL);
     g_signal_connect(TopicChoice, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -520,7 +520,7 @@ void chooseAnswerA(GtkButton *ans_)
             }
         }
         else
-        {          
+        {
             gtk_widget_show(waiting_window);
         }
         gtk_widget_hide(GameView);
@@ -530,7 +530,6 @@ void chooseAnswerA(GtkButton *ans_)
         gtk_widget_hide(GameView1);
         gtk_widget_show(waiting_window);
     }
-    
 }
 void chooseAnswerB(GtkButton *ans_)
 {
@@ -558,7 +557,7 @@ void chooseAnswerB(GtkButton *ans_)
                 status = response->status;
             }
             else
-            {         
+            {
                 gtk_widget_show(TopicChoice);
             }
         }
@@ -573,7 +572,6 @@ void chooseAnswerB(GtkButton *ans_)
         gtk_widget_hide(GameView1);
         gtk_widget_show(waiting_window);
     }
-   
 }
 void chooseAnswerC(GtkButton *ans_)
 {
@@ -616,7 +614,6 @@ void chooseAnswerC(GtkButton *ans_)
         gtk_widget_hide(GameView1);
         gtk_widget_show(waiting_window);
     }
-    
 }
 void chooseAnswerD(GtkButton *ans_)
 {
@@ -655,11 +652,10 @@ void chooseAnswerD(GtkButton *ans_)
         gtk_widget_hide(GameView);
     }
     else
-    { 
+    {
         gtk_widget_hide(GameView1);
         gtk_widget_show(waiting_window);
     }
-    
 }
 int main(int argc, char const *argv[])
 {
@@ -703,7 +699,7 @@ int main(int argc, char const *argv[])
             }
             gtk_init(&argc, &argv);
 
-            builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+            builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
 
             index_ = GTK_WIDGET(gtk_builder_get_object(builder, "Index"));
             gtk_builder_connect_signals(builder, NULL);
