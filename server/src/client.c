@@ -12,52 +12,13 @@
 
 #define BUFF_SIZE 1024
 
-// Question *ques = (Question *)malloc(sizeof(Question));
-// Request *request = (Request *)malloc(sizeof(Request));
-// Response *response = (Response *)malloc(sizeof(Response));
-// Information *infor = (Information *)malloc(sizeof(Information));
-
-// gameplay for normal client
-void gamePlayForNormalTutorial()
-{
-    printf("-------------------Đấu trường 100-------------------\n");
-    printf("\nGameplay Tutorial(Choose answer): ");
-    printf("\n\tAnswer syntax: ANSWER answer");
-    printf("\n-------------------Đấu trường 100-------------------");
-    printf("\nInput to syntax: \n");
-}
-// tutorial choose topic
-void chooseTopicLevel()
-{
-    printf("-------------------Đấu trường 100-------------------\n");
-    printf("\nGameplay Tutorial (Choose level): ");
-    printf("\n\tChoose Topic Level syntax: TOPIC level (level: EASY, NORMAL, HARD)");
-    printf("\n--------------------------------------------------");
-    printf("\nInput to syntax: \n");
-}
-// game play for special player
-void gamePlayForSpecialTutorial()
-{
-    printf("-------------------Đấu trường 100-------------------\n");
-    printf("\nGameplay Tutorial(Choose answer): ");
-    printf("\n\tChoose Answer syntax: ANSWER answer");
-    printf("\n\tUse Help syntax: HELP");
-    printf("\n--------------------------------------------------");
-    printf("\nInput to syntax: \n");
-}
-void showQuestion(Question *question)
-{
-    printf("\n%s", question->question);
-    printf("\n%s", question->answer1);
-    printf("\n%s", question->answer2);
-    printf("\n%s", question->answer3);
-    printf("\n%s", question->answer4);
-}
 GtkWidget *username_widget;
 GtkWidget *password_widget;
 GtkWidget *index_;
-int choose_lucky = 0;
 
+int clickhelp_button = 0;
+int choose_lucky = 0;
+int questionNumber = 0;
 GAMEPLAY_STATUS status = UNAUTH;
 int clickedSubmit = 0;
 int client_sock, servPort;
@@ -68,6 +29,7 @@ Question *ques = NULL;
 Request *request = NULL;
 Response *response = NULL;
 Information *infor = NULL;
+int existQuestion = FALSE;
 float score = 0;
 int gameStatus = GAME_PLAYING;
 char register_line[BUFF_SIZE];
@@ -83,11 +45,12 @@ GtkWidget *waiting_mess;
 GtkWidget *Register;
 GtkWidget *user_regis;
 GtkWidget *pass_regis;
+char dapan;
 
 void clickedToLogin(GtkButton *login, gpointer data)
 {
     GtkBuilder *builder;
-    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
     Login_Username = GTK_WIDGET(gtk_builder_get_object(builder, "Login_Username"));
     gtk_builder_connect_signals(builder, NULL);
     username_widget = GTK_WIDGET(gtk_builder_get_object(builder, "username"));
@@ -99,7 +62,7 @@ void clickedToLogin(GtkButton *login, gpointer data)
 void clickedToRegister(GtkButton *regist, gpointer data)
 {
     GtkBuilder *builder;
-    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
     Register = GTK_WIDGET(gtk_builder_get_object(builder, "Register"));
     gtk_builder_connect_signals(builder, NULL);
     user_regis = GTK_WIDGET(gtk_builder_get_object(builder, "user_regis"));
@@ -136,7 +99,7 @@ void clickedToUserSubmit(GtkButton *Submit, gpointer data)
     strcpy(buff, readMessageResponse(response));
     status = response->status;
     GtkBuilder *builder;
-    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
     Login_Password = GTK_WIDGET(gtk_builder_get_object(builder, "Login_Password"));
     gtk_builder_connect_signals(builder, NULL);
     password_widget = GTK_WIDGET(gtk_builder_get_object(builder, "password"));
@@ -184,7 +147,7 @@ void clickedToPassSubmit(GtkButton *Submit, gpointer data)
     buff[strlen(buff) - 1] = '\0';
     GtkBuilder *builder;
     GtkWidget *yourname;
-    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
+    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
     waiting_window = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_window"));
     gtk_builder_connect_signals(builder, NULL);
     waiting_mess = GTK_WIDGET(gtk_builder_get_object(builder, "waiting_mess"));
@@ -205,6 +168,7 @@ void clickedToPassSubmit(GtkButton *Submit, gpointer data)
 
 void clickedToWaitingOk(GtkButton *Ok, gpointer data)
 {
+
     if (choose_lucky == 0)
     {
         requestGet(client_sock);
@@ -218,8 +182,9 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
                 lucky = TRUE;
             else
                 lucky = FALSE;
+
+            choose_lucky = 1;
         }
-        choose_lucky = 1;
     }
     if (response->status == WAITING_QUESTION && choose_lucky == 1)
     {
@@ -261,12 +226,11 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
                 if (response->status == END_GAME)
                 {
                     status = response->status;
-                    // readMessageResponse(response);
                 }
                 else
                 {
                     GtkBuilder *builder;
-                    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
+                    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
                     TopicChoice = GTK_WIDGET(gtk_builder_get_object(builder, "TopicChoice"));
                     gtk_builder_connect_signals(builder, NULL);
                     g_signal_connect(TopicChoice, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -278,14 +242,46 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
         }
         else
         {
-            GtkBuilder *builder;
-            builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
-            GameView1 = GTK_WIDGET(gtk_builder_get_object(builder, "GameView1"));
-            gtk_builder_connect_signals(builder, NULL);
-            g_signal_connect(GameView1, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-            g_object_unref(builder);
-            gtk_widget_show(GameView1);
-            gtk_widget_hide(waiting_window);
+            requestGet(client_sock);
+            receiveResponse(client_sock, response, sizeof(Response), 0);
+            if (response->status == END_GAME)
+            {
+                status = response->status;
+            }
+            else
+            {
+                //rcv response from ser
+                requestGet(client_sock);
+                receiveResponse(client_sock, response, sizeof(Response), 0);
+                status = response->status;
+                if (status == PLAYING)
+                {
+                    ques = (Question *)malloc(sizeof(Question));
+                    requestGet(client_sock);
+                    receiveQuestion(client_sock, ques, sizeof(Question), 0);
+                    existQuestion = TRUE;
+                    questionNumber++;
+                    GtkBuilder *builder;
+                    GtkWidget *question1, *ans_1, *ans_2, *ans_3, *ans_4;
+                    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+                    GameView1 = GTK_WIDGET(gtk_builder_get_object(builder, "GameView1"));
+                    gtk_builder_connect_signals(builder, NULL);
+                    question1 = GTK_WIDGET(gtk_builder_get_object(builder, "question1"));
+                    ans_1 = GTK_WIDGET(gtk_builder_get_object(builder, "ans_1"));
+                    ans_2 = GTK_WIDGET(gtk_builder_get_object(builder, "ans_2"));
+                    ans_3 = GTK_WIDGET(gtk_builder_get_object(builder, "ans_3"));
+                    ans_4 = GTK_WIDGET(gtk_builder_get_object(builder, "ans_4"));
+                    gtk_label_set_text(GTK_LABEL(question1), ques->question);
+                    gtk_label_set_text(GTK_LABEL(ans_1), ques->answer1);
+                    gtk_label_set_text(GTK_LABEL(ans_2), ques->answer2);
+                    gtk_label_set_text(GTK_LABEL(ans_3), ques->answer3);
+                    gtk_label_set_text(GTK_LABEL(ans_4), ques->answer4);
+                    g_signal_connect(GameView1, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+                    g_object_unref(builder);
+                    gtk_widget_show(GameView1);
+                    gtk_widget_hide(waiting_window);
+                }
+            }
         }
     }
     else
@@ -299,37 +295,384 @@ void chooseTopicEasy(GtkButton *easy, gpointer data)
     strcpy(buff, "TOPIC EASY");
     request = (Request *)malloc(sizeof(Request));
     response = (Response *)malloc(sizeof(Response));
+    ques = (Question *)malloc(sizeof(Question));
     setOpcodeRequest(request, buff);
     sendRequest(client_sock, request, sizeof(Request), 0);
     receiveResponse(client_sock, response, sizeof(Response), 0);
-
     status = response->status;
     if (status == PLAYING)
     {
         strcpy(topic, response->data);
-        // readMessageResponse(response);
+        requestGet(client_sock);
+        receiveQuestion(client_sock, ques, sizeof(Question), 0);
+        existQuestion = TRUE;
+        questionNumber++;
     }
-    if (status == WAITING_QUESTION)
+    if (existQuestion == TRUE)
     {
-        // readMessageResponse(response);
-        information = TRUE;
+        GtkBuilder *builder;
+        GtkWidget *question, *mainuser_A, *mainuser_B, *mainuser_C, *mainuser_D;
+        builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+        GameView = GTK_WIDGET(gtk_builder_get_object(builder, "GameView"));
+        gtk_builder_connect_signals(builder, NULL);
+        question = GTK_WIDGET(gtk_builder_get_object(builder, "question"));
+        mainuser_A = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_A"));
+        mainuser_B = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_B"));
+        mainuser_C = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_C"));
+        mainuser_D = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_D"));
+        gtk_label_set_text(GTK_LABEL(question), ques->question);
+        gtk_label_set_text(GTK_LABEL(mainuser_A), ques->answer1);
+        gtk_label_set_text(GTK_LABEL(mainuser_B), ques->answer2);
+        gtk_label_set_text(GTK_LABEL(mainuser_C), ques->answer3);
+        gtk_label_set_text(GTK_LABEL(mainuser_D), ques->answer4);
+        g_signal_connect(GameView, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+        g_object_unref(builder);
+        gtk_widget_show(GameView);
+        gtk_widget_hide(TopicChoice);
     }
 }
 
+void chooseTopicNormal(GtkButton *easy, gpointer data)
+{
+    strcpy(buff, "TOPIC NORMAL");
+    request = (Request *)malloc(sizeof(Request));
+    response = (Response *)malloc(sizeof(Response));
+    ques = (Question *)malloc(sizeof(Question));
+    setOpcodeRequest(request, buff);
+    sendRequest(client_sock, request, sizeof(Request), 0);
+    receiveResponse(client_sock, response, sizeof(Response), 0);
+    status = response->status;
+    if (status == PLAYING)
+    {
+        strcpy(topic, response->data);
+        requestGet(client_sock);
+        receiveQuestion(client_sock, ques, sizeof(Question), 0);
+        existQuestion = TRUE;
+        questionNumber++;
+    }
+    if (existQuestion == TRUE)
+    {
+        GtkBuilder *builder;
+        GtkWidget *question, *mainuser_A, *mainuser_B, *mainuser_C, *mainuser_D;
+        builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+        GameView = GTK_WIDGET(gtk_builder_get_object(builder, "GameView"));
+        gtk_builder_connect_signals(builder, NULL);
+        question = GTK_WIDGET(gtk_builder_get_object(builder, "question"));
+        mainuser_A = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_A"));
+        mainuser_B = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_B"));
+        mainuser_C = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_C"));
+        mainuser_D = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_D"));
+        gtk_label_set_text(GTK_LABEL(question), ques->question);
+        gtk_label_set_text(GTK_LABEL(mainuser_A), ques->answer1);
+        gtk_label_set_text(GTK_LABEL(mainuser_B), ques->answer2);
+        gtk_label_set_text(GTK_LABEL(mainuser_C), ques->answer3);
+        gtk_label_set_text(GTK_LABEL(mainuser_D), ques->answer4);
+        g_signal_connect(GameView, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+        g_object_unref(builder);
+        gtk_widget_show(GameView);
+        gtk_widget_hide(TopicChoice);
+    }
+}
+
+void chooseTopicHard(GtkButton *easy, gpointer data)
+{
+    strcpy(buff, "TOPIC HARD");
+    request = (Request *)malloc(sizeof(Request));
+    response = (Response *)malloc(sizeof(Response));
+    ques = (Question *)malloc(sizeof(Question));
+    setOpcodeRequest(request, buff);
+    sendRequest(client_sock, request, sizeof(Request), 0);
+    receiveResponse(client_sock, response, sizeof(Response), 0);
+    status = response->status;
+    if (status == PLAYING)
+    {
+        strcpy(topic, response->data);
+        requestGet(client_sock);
+        receiveQuestion(client_sock, ques, sizeof(Question), 0);
+        existQuestion = TRUE;
+        questionNumber++;
+    }
+    if (existQuestion == TRUE)
+    {
+        GtkBuilder *builder;
+        GtkWidget *question, *mainuser_A, *mainuser_B, *mainuser_C, *mainuser_D;
+        builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+        GameView = GTK_WIDGET(gtk_builder_get_object(builder, "GameView"));
+        gtk_builder_connect_signals(builder, NULL);
+        question = GTK_WIDGET(gtk_builder_get_object(builder, "question"));
+        mainuser_A = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_A"));
+        mainuser_B = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_B"));
+        mainuser_C = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_C"));
+        mainuser_D = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_D"));
+        gtk_label_set_text(GTK_LABEL(question), ques->question);
+        gtk_label_set_text(GTK_LABEL(mainuser_A), ques->answer1);
+        gtk_label_set_text(GTK_LABEL(mainuser_B), ques->answer2);
+        gtk_label_set_text(GTK_LABEL(mainuser_C), ques->answer3);
+        gtk_label_set_text(GTK_LABEL(mainuser_D), ques->answer4);
+        g_signal_connect(GameView, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+        g_object_unref(builder);
+        gtk_widget_show(GameView);
+        gtk_widget_hide(TopicChoice);
+    }
+}
+
+void clickedHelp(GtkButton *helper)
+{
+    requestGetHelp(client_sock);
+    clickhelp_button += 1;
+    receiveResponse(client_sock, response, sizeof(Response), 0);
+    status = response->status;
+    GtkBuilder *builder;
+    builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
+    TopicChoice = GTK_WIDGET(gtk_builder_get_object(builder, "TopicChoice"));
+    gtk_builder_connect_signals(builder, NULL);
+    g_signal_connect(TopicChoice, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_object_unref(builder);
+    if (status == WAITING_QUESTION)
+    {
+        existQuestion = FALSE;
+    }
+    if (response->code == USER_USED_HINT_SUCCESS)
+    {
+        help = TRUE;
+    }
+    if (clickhelp_button == 3)
+    {
+        gtk_widget_hide(helper);
+        requestCheckInformation(client_sock);
+        receiveInformation(client_sock, infor, sizeof(Information), 0);
+        if (infor->status == TRUE)
+        {
+            information = TRUE;
+            requestGet(client_sock);
+            receiveResponse(client_sock, response, sizeof(Response), 0);
+            information = FALSE;
+            if (response->status == END_GAME)
+            {
+                status = response->status;
+            }
+            else
+            {
+                gtk_widget_show(TopicChoice);
+            }
+        }
+        else
+        {
+            gtk_widget_show(waiting_window);
+        }
+        gtk_widget_hide(GameView);
+    }
+    else if (clickhelp_button < 3)
+    {
+        requestCheckInformation(client_sock);
+        receiveInformation(client_sock, infor, sizeof(Information), 0);
+        if (infor->status == TRUE)
+        {
+            information = TRUE;
+            requestGet(client_sock);
+            receiveResponse(client_sock, response, sizeof(Response), 0);
+            information = FALSE;
+            if (response->status == END_GAME)
+            {
+                status = response->status;
+            }
+            else
+            {
+                gtk_widget_show(TopicChoice);
+            }
+        }
+        else
+        {
+            gtk_widget_show(waiting_window);
+        }
+        gtk_widget_hide(GameView);
+    }
+}
+
+void chooseAnswerA(GtkButton *ans_)
+{
+    strcpy(buff1, "ANSWER A");
+    setOpcodeRequest(request, buff1);
+    sendRequest(client_sock, request, sizeof(Request), 0);
+    receiveResponse(client_sock, response, sizeof(Response), 0);
+    status = response->status;
+    if (status == WAITING_QUESTION)
+    {
+        existQuestion = FALSE;
+    }
+    if (lucky == TRUE)
+    {
+        requestCheckInformation(client_sock);
+        receiveInformation(client_sock, infor, sizeof(Information), 0);
+        if (infor->status == TRUE)
+        {
+            information = TRUE;
+            requestGet(client_sock);
+            receiveResponse(client_sock, response, sizeof(Response), 0);
+            information = FALSE;
+            if (response->status == END_GAME)
+            {
+                status = response->status;
+            }
+            else
+            {
+                gtk_widget_show(TopicChoice);
+            }
+        }
+        else
+        {          
+            gtk_widget_show(waiting_window);
+        }
+        gtk_widget_hide(GameView);
+    }
+    else
+    {
+        gtk_widget_hide(GameView1);
+        gtk_widget_show(waiting_window);
+    }
+    
+}
+void chooseAnswerB(GtkButton *ans_)
+{
+    strcpy(buff1, "ANSWER B");
+    setOpcodeRequest(request, buff1);
+    sendRequest(client_sock, request, sizeof(Request), 0);
+    receiveResponse(client_sock, response, sizeof(Response), 0);
+    status = response->status;
+    if (status == WAITING_QUESTION)
+    {
+        existQuestion = FALSE;
+    }
+    if (lucky == TRUE)
+    {
+        requestCheckInformation(client_sock);
+        receiveInformation(client_sock, infor, sizeof(Information), 0);
+        if (infor->status == TRUE)
+        {
+            information = TRUE;
+            requestGet(client_sock);
+            receiveResponse(client_sock, response, sizeof(Response), 0);
+            information = FALSE;
+            if (response->status == END_GAME)
+            {
+                status = response->status;
+            }
+            else
+            {         
+                gtk_widget_show(TopicChoice);
+            }
+        }
+        else
+        {
+            gtk_widget_show(waiting_window);
+        }
+        gtk_widget_hide(GameView);
+    }
+    else
+    {
+        gtk_widget_hide(GameView1);
+        gtk_widget_show(waiting_window);
+    }
+   
+}
+void chooseAnswerC(GtkButton *ans_)
+{
+    strcpy(buff1, "ANSWER C");
+    setOpcodeRequest(request, buff1);
+    sendRequest(client_sock, request, sizeof(Request), 0);
+    receiveResponse(client_sock, response, sizeof(Response), 0);
+    status = response->status;
+    if (status == WAITING_QUESTION)
+    {
+        existQuestion = FALSE;
+    }
+    if (lucky == TRUE)
+    {
+        requestCheckInformation(client_sock);
+        receiveInformation(client_sock, infor, sizeof(Information), 0);
+        if (infor->status == TRUE)
+        {
+            information = TRUE;
+            requestGet(client_sock);
+            receiveResponse(client_sock, response, sizeof(Response), 0);
+            information = FALSE;
+            if (response->status == END_GAME)
+            {
+                status = response->status;
+            }
+            else
+            {
+                gtk_widget_show(TopicChoice);
+            }
+        }
+        else
+        {
+            gtk_widget_show(waiting_window);
+        }
+        gtk_widget_hide(GameView);
+    }
+    else
+    {
+        gtk_widget_hide(GameView1);
+        gtk_widget_show(waiting_window);
+    }
+    
+}
+void chooseAnswerD(GtkButton *ans_)
+{
+    strcpy(buff1, "ANSWER D");
+    setOpcodeRequest(request, buff1);
+    sendRequest(client_sock, request, sizeof(Request), 0);
+    receiveResponse(client_sock, response, sizeof(Response), 0);
+    status = response->status;
+    if (status == WAITING_QUESTION)
+    {
+        existQuestion = FALSE;
+    }
+    if (lucky == TRUE)
+    {
+        requestCheckInformation(client_sock);
+        receiveInformation(client_sock, infor, sizeof(Information), 0);
+        if (infor->status == TRUE)
+        {
+            information = TRUE;
+            requestGet(client_sock);
+            receiveResponse(client_sock, response, sizeof(Response), 0);
+            information = FALSE;
+            if (response->status == END_GAME)
+            {
+                status = response->status;
+            }
+            else
+            {
+                gtk_widget_show(TopicChoice);
+            }
+        }
+        else
+        {
+            gtk_widget_show(waiting_window);
+        }
+        gtk_widget_hide(GameView);
+    }
+    else
+    { 
+        gtk_widget_hide(GameView1);
+        gtk_widget_show(waiting_window);
+    }
+    
+}
 int main(int argc, char const *argv[])
 {
     char username[BUFF_SIZE], topic[BUFF_SIZE];
     struct sockaddr_in server_addr; /* server's address information */
     int msg_len, bytes_sent, bytes_received;
     char buff[BUFF_SIZE], code[BUFF_SIZE], data[BUFF_SIZE];
-    ques = (Question *)malloc(sizeof(Question));
     request = (Request *)malloc(sizeof(Request));
     response = (Response *)malloc(sizeof(Response));
     Information *infor = (Information *)malloc(sizeof(Information));
-    int lucky = FALSE, existQuestion = FALSE, help = FALSE;
-    int questionNumber = 0;
+    int lucky = FALSE, help = FALSE;
+
     float score = 0;
-    int inforamation = TRUE;
     int gameStatus = GAME_PLAYING;
 
     // gtk
@@ -360,7 +703,7 @@ int main(int argc, char const *argv[])
             }
             gtk_init(&argc, &argv);
 
-            builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
+            builder = gtk_builder_new_from_file("/home/thien/dau-truong-100/View.glade");
 
             index_ = GTK_WIDGET(gtk_builder_get_object(builder, "Index"));
             gtk_builder_connect_signals(builder, NULL);
