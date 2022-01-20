@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "../libs/protocol.h"
 #include "../libs/tool.h"
@@ -45,6 +46,13 @@ GtkWidget *waiting_mess;
 GtkWidget *Register;
 GtkWidget *user_regis;
 GtkWidget *pass_regis;
+GtkWidget *score_show;
+GtkWidget *survival;
+GtkWidget *wingame;
+GtkWidget *user_win;
+int ten = 0;
+char scoreShow[BUFF_SIZE];
+char survivalShow[BUFF_SIZE];
 char dapan;
 
 void clickedToLogin(GtkButton *login, gpointer data)
@@ -226,6 +234,14 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
                 if (response->status == END_GAME)
                 {
                     status = response->status;
+                    GtkBuilder *builder;
+                    char commandWin[BUFF_SIZE];
+                    builder = gtk_builder_new_from_file("/home/hoang/dau-truong-100/View.glade");
+                    wingame = GTK_WIDGET(gtk_builder_get_object(builder, "wingame"));
+                    user_win = GTK_WIDGET(gtk_builder_get_object(builder, "user_win"));
+                    gtk_widget_show(wingame);
+                    sprintf(commandWin, "%s da chien thang", luckyPlayer);
+                    gtk_label_set_text(GTK_LABEL(user_win), commandWin);
                 }
                 else
                 {
@@ -320,6 +336,21 @@ void chooseTopicEasy(GtkButton *easy, gpointer data)
         mainuser_B = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_B"));
         mainuser_C = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_C"));
         mainuser_D = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_D"));
+        score_show = GTK_WIDGET(gtk_builder_get_object(builder, "score_show"));
+        survival = GTK_WIDGET(gtk_builder_get_object(builder, "survival"));
+        if (ten == 0)
+        {
+            gtk_label_set_text(GTK_LABEL(score_show), "0");
+            gtk_label_set_text(GTK_LABEL(survival), "2");
+            ten = 1;
+        }
+        else
+        {
+            gcvt(infor->score, 6, scoreShow);
+            sprintf(survivalShow, "%d", infor->playerPlaying);
+            gtk_label_set_text(GTK_LABEL(score_show), scoreShow);
+            gtk_label_set_text(GTK_LABEL(survival), survivalShow);
+        }
         gtk_label_set_text(GTK_LABEL(question), ques->question);
         gtk_label_set_text(GTK_LABEL(mainuser_A), ques->answer1);
         gtk_label_set_text(GTK_LABEL(mainuser_B), ques->answer2);
@@ -362,6 +393,22 @@ void chooseTopicNormal(GtkButton *easy, gpointer data)
         mainuser_B = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_B"));
         mainuser_C = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_C"));
         mainuser_D = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_D"));
+        score_show = GTK_WIDGET(gtk_builder_get_object(builder, "score_show"));
+        survival = GTK_WIDGET(gtk_builder_get_object(builder, "survival"));
+        if (ten == 0)
+        {
+            gtk_label_set_text(GTK_LABEL(score_show), "0");
+            gtk_label_set_text(GTK_LABEL(survival), "2");
+            ten = 1;
+        }
+        else
+        {
+            gcvt(infor->score, 6, scoreShow);
+            sprintf(survivalShow, "%d", infor->playerPlaying);
+            gtk_label_set_text(GTK_LABEL(score_show), scoreShow);
+            gtk_label_set_text(GTK_LABEL(survival), survivalShow);
+        }
+
         gtk_label_set_text(GTK_LABEL(question), ques->question);
         gtk_label_set_text(GTK_LABEL(mainuser_A), ques->answer1);
         gtk_label_set_text(GTK_LABEL(mainuser_B), ques->answer2);
@@ -404,6 +451,21 @@ void chooseTopicHard(GtkButton *easy, gpointer data)
         mainuser_B = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_B"));
         mainuser_C = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_C"));
         mainuser_D = GTK_WIDGET(gtk_builder_get_object(builder, "mainuser_D"));
+        score_show = GTK_WIDGET(gtk_builder_get_object(builder, "score_show"));
+        survival = GTK_WIDGET(gtk_builder_get_object(builder, "survival"));
+        if (ten == 0)
+        {
+            gtk_label_set_text(GTK_LABEL(score_show), "0");
+            gtk_label_set_text(GTK_LABEL(survival), "2");
+            ten = 1;
+        }
+        else
+        {
+            gcvt(infor->score, 6, scoreShow);
+            sprintf(survivalShow, "%d", infor->playerPlaying);
+            gtk_label_set_text(GTK_LABEL(score_show), scoreShow);
+            gtk_label_set_text(GTK_LABEL(survival), survivalShow);
+        }
         gtk_label_set_text(GTK_LABEL(question), ques->question);
         gtk_label_set_text(GTK_LABEL(mainuser_A), ques->answer1);
         gtk_label_set_text(GTK_LABEL(mainuser_B), ques->answer2);
