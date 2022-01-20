@@ -84,7 +84,7 @@ typedef struct
     char message[50];
     char data[50];
 } Response;
-//core function
+// core function
 int receiveRequest(int socket, Request *buff, int size, int flags);
 int sendRequest(int socket, Request *buff, int size, int flags);
 
@@ -93,18 +93,18 @@ int receiveMessage(int socket, Response *msg, int size, int flags);
 
 // set message response
 void setMessageResponse(Response *msg);
-char* readMessageResponse(Response *msg);
+void readMessageResponse(Response *msg);
 
-//set opcode request
+// set opcode request
 void setOpcodeRequest(Request *request, char *input);
 
-//send question
+// send question
 int sendQuestion(int socket, Question *question, int size, int flags);
 int receiveQuestion(int socket, Question *question, int size, int flags);
-//send information
+// send information
 int sendInformation(int socket, Information *infor, int size, int flags);
 int receiveInformation(int socket, Information *infor, int size, int flags);
-//request get
+// request get
 void requestGet(int socket);
 void requestLogout(int socket, char *username);
 void requestCheckInformation(int socket);

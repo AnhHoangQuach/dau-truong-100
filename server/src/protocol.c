@@ -114,7 +114,7 @@ void setMessageResponse(Response *msg)
       strcpy(msg->message, "Game ready ");
       break;
     case GAME_NOT_READY:
-      strcpy(msg->message, "Waiting other player... ");
+      strcpy(msg->message, "Waiting orther player... ");
       break;
     case TOPIC_USER_DONT_CHOOSE_LEVEL:
       strcpy(msg->message, "");
@@ -132,30 +132,26 @@ void setMessageResponse(Response *msg)
   }
 }
 
-char *readMessageResponse(Response *msg)
+void readMessageResponse(Response *msg)
 {
-  char *buffer = malloc(1024);
-  memset(buffer, '\0', (strlen(buffer) + 1));
   if (msg->code != NULL)
   {
-    strcat(buffer, msg->message);
-    strcat(buffer, "\n");
+    printf("%s\n", msg->message);
     switch (msg->code)
     {
     case PASSWORD_CORRECT:
-      strcat(buffer, msg->data);
+      printf("Hello %s\n", msg->data);
       break;
     case LOGOUT_SUCCESS:
-      strcat(buffer, msg->data);
+      printf("Goodbye %s\n", msg->data);
       break;
     case TOPIC_USER_CHOOSE_LEVEL:
-      strcat(buffer, msg->data);
+      printf("User choose level %s\n", msg->data);
       break;
     default:
       break;
     }
   }
-  return buffer;
 }
 
 void setOpcodeRequest(Request *request, char *input)
