@@ -187,18 +187,6 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="answer_bool">
-            <property name="width_request">100</property>
-            <property name="height_request">30</property>
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="x">218</property>
-            <property name="y">70</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkLabel">
             <property name="width_request">100</property>
             <property name="height_request">20</property>
@@ -384,6 +372,9 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <signal name="clicked" handler="clickedToLogin" swapped="no"/>
+            <style>
+              <class name="login"/>
+            </style>
           </object>
           <packing>
             <property name="x">150</property>

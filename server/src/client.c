@@ -209,19 +209,13 @@ void clickedToWaitingOk(GtkButton *Ok, gpointer data)
                     information = TRUE;
                     if (help == FALSE)
                     {
-                        score = score + infor->score;
-                        printf("Số người trả lời sai câu hỏi trên: %d\n", infor->playerAnswerWrong);
-                        printf("Số điểm bạn nhận được: %.1f\n", infor->score);
-                        printf("Số người cùng chơi: %d\n", infor->playerPlaying);
-                        printf("Số điểm của bạn hiện tại: %.1f\n", score);
+                        float temp = atof(scoreShow);
+                        gcvt(temp + infor->score, 6, scoreShow);
                     }
                     else
                     {
-                        score = score - infor->score;
-                        printf("Số điểm bạn nhận bị trừ: %.1f\n", infor->score);
-                        printf("Số người trả lời sai câu hỏi trên: %d\n", infor->playerAnswerWrong);
-                        printf("Số người cùng chơi: %d\n", infor->playerPlaying);
-                        printf("Số điểm của bạn hiện tại: %.1f\n", score);
+                        float temp = atof(scoreShow);
+                        gcvt(temp - infor->score, 6, scoreShow);
                         help = FALSE;
                     }
                 }
