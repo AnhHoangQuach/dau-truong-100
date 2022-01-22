@@ -192,7 +192,7 @@ int main(int argc, char const *argv[])
                             continue; /* no more readable descriptors */
                     }
                 }
-                if (gameStatus == LOSE)
+                if (gameStatus == GAME_END)
                 {
                     if (countMemberOnline(head, numberPlayerArray) == BACKLOG && positionLuckyPlayer == 0)
                     {
